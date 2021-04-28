@@ -1,0 +1,17 @@
+QPushButton
+{
+	font-family:"Microsoft YaHei";
+	font-weight:bold;
+	color:white;
+	text-align:center;
+	background:#6DDF6D;border-radius:5px;
+	border:none;
+	font-size:19px;
+}
+QPushButton:hover{
+	color:#DDDDDD;
+}
+QPushButton:pressed{
+	background:green;
+	color:white;
+}
