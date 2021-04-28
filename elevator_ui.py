@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-04-28 16:50:58
+LastEditTime: 2021-04-29 00:38:52
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -45,7 +45,7 @@ class Ui_MainWindow(object):
     def setupUi(self,MainWindow):
         MainWindow.setObjectName("MainWindow")
         #MainWindow.resize(1550,656)
-        MainWindow.resize(1240,1150)
+        MainWindow.resize(1240,980)
         MainWindow.setStyleSheet("")
         self.central_widget=QtWidgets.QWidget(MainWindow)
         self.central_widget.setObjectName("centralWidget")
@@ -81,7 +81,7 @@ class Ui_MainWindow(object):
         self.outer_level_one_button_down_pos.extend(([300,650]))
 
         #输出框设置
-        self.textBrowser.setGeometry(QtCore.QRect(720,600,441,351))
+        self.textBrowser.setGeometry(QtCore.QRect(720,560,441,250))
 
         for i in range (0,NUM_ELEVATOR):
             
@@ -131,16 +131,22 @@ class Ui_MainWindow(object):
             self.inner_open_button[i].setStyleSheet(op_button_style)
             self.inner_open_button[i].setGeometry(QtCore.QRect(self.inner_open_button_pos[i], 240, 31, 31))
             self.inner_open_button[i].setObjectName("innerOpenButton"+str(i))
+            #开门按钮设置槽函数InnerOpButtonClicked
+            self.inner_open_button[i].clicked.connect(MainWindow.InnerOpButtonClicked)
             #关门按钮加入组件
             self.inner_close_button.append(QtWidgets.QPushButton(self.central_widget))
             self.inner_close_button[i].setStyleSheet(op_button_style)
             self.inner_close_button[i].setGeometry(QtCore.QRect(self.inner_open_button_pos[i]+40, 240, 31, 31))
             self.inner_close_button[i].setObjectName("innerCloseButton"+str(i))
+            #关门按钮设置槽函数InnerOpButtonClicked
+            self.inner_close_button[i].clicked.connect(MainWindow.InnerOpButtonClicked)
             #警告按钮加入组件
             self.inner_warn_button.append(QtWidgets.QPushButton(self.central_widget))
             self.inner_warn_button[i].setStyleSheet(warn_button_style)
             self.inner_warn_button[i].setGeometry(QtCore.QRect(self.inner_open_button_pos[i] + 80, 240, 31, 31))
             self.inner_warn_button[i].setObjectName("innerWarnButton"+str(i))
+            #警告按钮设置槽函数InnerWarnButtonClicked
+            self.inner_warn_button[i].clicked.connect(MainWindow.InnerWarnButtonClicked)
 
             #添加每个电梯的内部楼层按钮
             self.inner_level_button.append(QtWidgets.QPushButton(self.central_widget))
@@ -150,23 +156,26 @@ class Ui_MainWindow(object):
                 self.inner_level_button[i][j].setGeometry(
                     QtCore.QRect(self.inner_level_one_button_pos[i]+40*(j%4), 200-40*(int(j/4)), 31, 31))
                 self.inner_level_button[i][j].setObjectName("innerLevelButton_" + str(i) + "_" + str(j))
+                #每个楼层按钮设置槽函数
+                self.inner_level_button[i][j].clicked.connect(MainWindow.InnerLevelButtonClicked)
 
 
         #添加外部每个楼层的上下按钮
         for j in range(0,NUM_LEVEL):
             self.outer_up_button.append(QtWidgets.QPushButton(self.central_widget))
             self.outer_up_button[j].setStyleSheet(outer_button_style)
-            # self.outer_up_button[j].setGeometry(
-            #     QtCore.QRect(self.outer_level_one_button_up_pos[int(j / 10)], 534 - 50 * (j % 10), 31, 31))
             self.outer_up_button[j].setGeometry(
-                  QtCore.QRect(self.outer_level_one_button_up_pos[int(j / 10)], 1050 - 50 * (j % 10), 31, 31))
+                  QtCore.QRect(self.outer_level_one_button_up_pos[int(j / 10)], 910 - 40 * (j % 10), 31, 31))
             self.outer_up_button[j].setObjectName("OuterUpButton" + str(j))
 
             self.outer_down_button.append(QtWidgets.QPushButton(self.central_widget))
             self.outer_down_button[j].setStyleSheet(outer_button_style)
             self.outer_down_button[j].setGeometry(
-                QtCore.QRect(self.outer_level_one_button_down_pos[int(j / 10)], 1050 - 50 * (j % 10), 31, 31))
+                QtCore.QRect(self.outer_level_one_button_down_pos[int(j / 10)], 910 - 40 * (j % 10), 31, 31))
             self.outer_down_button[j].setObjectName("OuterDownButton"+str(j))
+            #外部操作按钮设置槽函数
+            self.outer_up_button[j].clicked.connect(MainWindow.OuterButtonClicked)
+            self.outer_down_button[j].clicked.connect(MainWindow.OuterButtonClicked)
         
 
         
@@ -183,7 +192,7 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        #self.printf("电梯1")
+        #self.printMessage("电梯1")
         
             
     def retranslateUi(self, MainWindow):
@@ -201,13 +210,27 @@ class Ui_MainWindow(object):
             self.outer_up_button[j].setText(_translate("MainWindow","▲"))
             self.outer_down_button[j].setText(_translate("MainWindow","▼"))
 
-    def printf(self,text_string):
+    def printMessage(self,text_string):
         self.textBrowser.append(text_string)
         self.cursor=self.textBrowser.textCursor()
         self.textBrowser.moveCursor(self.cursor.End)
         QtWidgets.QApplication.processEvents()
 
-    #TODO:在调度器中与本窗口连接，使得调度器可使用printf输出调度信息
+    #槽函数设置
+    #TODO:设置槽函数内部信息
+    def InnerLevelButtonClicked(self):
+        pass
+
+    def InnerOpButtonClicked(self):
+        pass
+
+    def InnerWarnButtonClicked(self):
+        pass
+
+    def OuterButtonClicked(self):
+        pass
+
+    #TODO:在调度器中与本窗口连接，使得调度器可使用printMessage输出调度信息
     
 
 
