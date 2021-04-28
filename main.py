@@ -11,7 +11,7 @@ import sys,threading
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 
-from const import *
+from utils import *
 from elevator_ui import *
 
 

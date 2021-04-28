@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-04-28 13:00:02
+LastEditTime: 2021-04-28 16:50:58
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -10,7 +10,7 @@ from PyQt5 import QtCore,QtGui,QtWidgets
 from PyQt5.QtCore import *
 
 
-from const import *
+from utils import *
 
 
 #TODO:设置按钮长按效果
@@ -40,13 +40,12 @@ class Ui_MainWindow(object):
         self.outer_up_button=[]    #电梯外的上楼按钮
         self.outer_down_button=[]  #电梯外的下楼按钮
 
-
-
         
     
     def setupUi(self,MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1550,656)
+        #MainWindow.resize(1550,656)
+        MainWindow.resize(1240,1150)
         MainWindow.setStyleSheet("")
         self.central_widget=QtWidgets.QWidget(MainWindow)
         self.central_widget.setObjectName("centralWidget")
@@ -55,6 +54,8 @@ class Ui_MainWindow(object):
         self.layout_widget = QtWidgets.QWidget(self.central_widget)
         self.layout_widget.setGeometry(QtCore.QRect(300, 240, 111, 31))
         self.layout_widget.setObjectName("layoutWidget")
+
+        self.textBrowser=QtWidgets.QTextBrowser(self.central_widget)
 
         #按钮qss读入
         warn_button_style=QSS_READER.read("style/inner_warn_button.qss")
@@ -76,11 +77,14 @@ class Ui_MainWindow(object):
         self.elevator_lcd_pos.extend([100,330,560,790,1020])  #初设电梯LCD位置
         self.inner_open_button_pos.extend([70,300,530,760,990])
         self.inner_level_one_button_pos.extend([50,280,510,740,970])
-        self.outer_level_one_button_up_pos.extend([1250,1410])
-        self.outer_level_one_button_down_pos.extend(([1300,1460]))
+        self.outer_level_one_button_up_pos.extend([250,600])
+        self.outer_level_one_button_down_pos.extend(([300,650]))
 
+        #输出框设置
+        self.textBrowser.setGeometry(QtCore.QRect(720,600,441,351))
 
         for i in range (0,NUM_ELEVATOR):
+            
             #放入开门电梯的图像
             self.elevator_open_image.append(QtWidgets.QLabel(self.central_widget))
             self.elevator_open_image[i].setGeometry(QtCore.QRect(self.elevator_pos[i], 360, 191,181))
@@ -152,22 +156,20 @@ class Ui_MainWindow(object):
         for j in range(0,NUM_LEVEL):
             self.outer_up_button.append(QtWidgets.QPushButton(self.central_widget))
             self.outer_up_button[j].setStyleSheet(outer_button_style)
+            # self.outer_up_button[j].setGeometry(
+            #     QtCore.QRect(self.outer_level_one_button_up_pos[int(j / 10)], 534 - 50 * (j % 10), 31, 31))
             self.outer_up_button[j].setGeometry(
-                QtCore.QRect(self.outer_level_one_button_up_pos[int(j / 10)], 534 - 50 * (j % 10), 31, 31))
+                  QtCore.QRect(self.outer_level_one_button_up_pos[int(j / 10)], 1050 - 50 * (j % 10), 31, 31))
             self.outer_up_button[j].setObjectName("OuterUpButton" + str(j))
 
             self.outer_down_button.append(QtWidgets.QPushButton(self.central_widget))
             self.outer_down_button[j].setStyleSheet(outer_button_style)
             self.outer_down_button[j].setGeometry(
-                QtCore.QRect(self.outer_level_one_button_down_pos[int(j / 10)], 534 - 50 * (j % 10), 31, 31))
+                QtCore.QRect(self.outer_level_one_button_down_pos[int(j / 10)], 1050 - 50 * (j % 10), 31, 31))
             self.outer_down_button[j].setObjectName("OuterDownButton"+str(j))
+        
 
-
-
-
-
-
-
+        
         #Menubar和Statebar设定
         MainWindow.setCentralWidget(self.central_widget)
         self.menubar=QtWidgets.QMenuBar(MainWindow)
@@ -180,6 +182,8 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+        #self.printf("电梯1")
         
             
     def retranslateUi(self, MainWindow):
@@ -196,6 +200,16 @@ class Ui_MainWindow(object):
         for j in range(0,NUM_LEVEL):
             self.outer_up_button[j].setText(_translate("MainWindow","▲"))
             self.outer_down_button[j].setText(_translate("MainWindow","▼"))
+
+    def printf(self,text_string):
+        self.textBrowser.append(text_string)
+        self.cursor=self.textBrowser.textCursor()
+        self.textBrowser.moveCursor(self.cursor.End)
+        QtWidgets.QApplication.processEvents()
+
+    #TODO:在调度器中与本窗口连接，使得调度器可使用printf输出调度信息
+    
+
 
 
 
