@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-04-28 12:42:36
+LastEditTime: 2021-04-28 13:00:02
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -11,6 +11,9 @@ from PyQt5.QtCore import *
 
 
 from const import *
+
+
+#TODO:设置按钮长按效果
 
 class Ui_MainWindow(object):
     def __init__(self):
@@ -135,6 +138,7 @@ class Ui_MainWindow(object):
             self.inner_warn_button[i].setGeometry(QtCore.QRect(self.inner_open_button_pos[i] + 80, 240, 31, 31))
             self.inner_warn_button[i].setObjectName("innerWarnButton"+str(i))
 
+            #添加每个电梯的内部楼层按钮
             self.inner_level_button.append(QtWidgets.QPushButton(self.central_widget))
             for j in range(0,NUM_LEVEL):
                 self.inner_level_button[i].append(QtWidgets.QPushButton(self.central_widget))
@@ -144,6 +148,7 @@ class Ui_MainWindow(object):
                 self.inner_level_button[i][j].setObjectName("innerLevelButton_" + str(i) + "_" + str(j))
 
 
+        #添加外部每个楼层的上下按钮
         for j in range(0,NUM_LEVEL):
             self.outer_up_button.append(QtWidgets.QPushButton(self.central_widget))
             self.outer_up_button[j].setStyleSheet(outer_button_style)
