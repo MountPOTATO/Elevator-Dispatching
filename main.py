@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:40:26
-LastEditTime: 2021-04-26 20:27:07
+LastEditTime: 2021-04-30 11:12:04
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\main.py
@@ -13,6 +13,7 @@ from PyQt5.QtGui import *
 
 from utils import *
 from elevator_ui import *
+
 
 
 class ElevatorInterface(QtWidgets.QMainWindow,Ui_MainWindow):

@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:13:46
-LastEditTime: 2021-04-28 12:58:06
+LastEditTime: 2021-04-30 10:15:32
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\const.py
@@ -47,3 +47,17 @@ class QSS_READER:
         """        
         with open(style,'r') as f:
             return f.read()
+
+###########################################组件命名#####################################################
+
+open_img_name="i_eoi_"
+close_img_name="i_eci_"
+open_gif_name="i_ogl_"
+close_gif_name="i_cgl_"
+elevator_lcd_name="i_lcd_"
+inner_open_button_name="i_obn_"
+inner_close_button_name="i_cbn_"
+inner_warn_button_name="i_wbn_"
+inner_level_button_name="i_lbn_"
+outer_up_button_name="o_ubn_"
+outer_down_button_name="o_dbn_"
