@@ -1,14 +1,14 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-04-30 11:33:30
+LastEditTime: 2021-05-04 10:03:20
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
 '''
 from PyQt5 import QtCore,QtGui,QtWidgets
 from PyQt5.QtCore import *
-
+import threading
 
 from utils import *
 from dispatcher import *
@@ -107,16 +107,19 @@ class Ui_MainWindow(object):
             self.open_gif_label[i].setMovie(QtGui.QMovie("resources/elevator/open_ani.gif"))
             self.open_gif_label[i].setObjectName(open_gif_name+str(i))
             self.open_gif_label[i].setVisible(False)
+            self.open_gif_label[i].movie().setPaused(True)
 
-            #TODO:调用动画方法
-            #self.open_gif_label[i].movie().start()
+
             #self.open_gif_label[i].show()
 
             self.close_gif_label.append(QtWidgets.QLabel(self.central_widget))
             self.close_gif_label[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.close_gif_label[i].setMovie(QtGui.QMovie("resources/elevator/close_ani.gif"))
-            self.open_gif_label[i].setObjectName(close_gif_name+str(i))
-            self.open_gif_label[i].setVisible(False)
+            self.close_gif_label[i].setObjectName(close_gif_name+str(i))
+            self.close_gif_label[i].setVisible(False)
+            self.close_gif_label[i].movie().setPaused(True)
+            self.close_gif_label[i].movie().setSpeed(70)
+
 
 
             #放入LCD
@@ -230,6 +233,8 @@ class Ui_MainWindow(object):
         self.textBrowser.moveCursor(self.cursor.End)
         QtWidgets.QApplication.processEvents()
 
+
+
     #槽函数设置
 
     def onInnerButtonClicked(self):
@@ -247,11 +252,12 @@ class Ui_MainWindow(object):
         elif clicked_content=="obn":
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了开门按钮")
 
-            self.open_elevator_animate(elevator_sn)
-            self.dispatcher.responseOBN(elevator_sn)
+            self.open_animation(elevator_sn)
+            #self.dispatcher.responseOBN(elevator_sn)
         elif clicked_content=="cbn":
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了关门按钮")
 
+            self.close_animation(elevator_sn)
             #TODO:添加调度命令
         elif clicked_content=="wbn":            
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
@@ -265,19 +271,47 @@ class Ui_MainWindow(object):
         clicked_content=object_name[2:5]
         if clicked_content=="ubn":
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了上楼按钮")
+            
         
         elif clicked_content=="dbn":
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了下楼按钮")
-        
-    
-    def open_elevator_animate(self,elevator_sn):
+
+
+    def open_animation(self,elevator_sn):
         self.elevator_open_image[elevator_sn].setVisible(False)
         self.elevator_close_image[elevator_sn].setVisible(False)
+        self.open_gif_label[elevator_sn].movie().jumpToFrame(0)
         self.open_gif_label[elevator_sn].movie().start()
         self.open_gif_label[elevator_sn].show()
 
-        #self.open_gif_label[i].movie().stop()
+        thread_op=threading.Timer(0.7,self.open_animation_end,(elevator_sn,))
+        thread_op.start()
+
+    def open_animation_end(self,elevator_sn):
+        self.open_gif_label[elevator_sn].movie().setPaused(True)
+        self.open_gif_label[elevator_sn].setVisible(False)
+        self.elevator_open_image[elevator_sn].setVisible(True)
+        self.elevator_close_image[elevator_sn].setVisible(False)
         
+
+
+    def close_animation(self,elevator_sn):
+        self.elevator_open_image[elevator_sn].setVisible(False)
+        self.elevator_close_image[elevator_sn].setVisible(False)
+        self.close_gif_label[elevator_sn].movie().jumpToFrame(0)
+        self.close_gif_label[elevator_sn].movie().start()
+        self.close_gif_label[elevator_sn].show()
+
+        thread_op=threading.Timer(0.7,self.close_animation_end,(elevator_sn,))
+        thread_op.start()
+
+    def close_animation_end(self,elevator_sn):
+        self.close_gif_label[elevator_sn].movie().setPaused(True)
+        self.close_gif_label[elevator_sn].setVisible(False)
+        self.elevator_close_image[elevator_sn].setVisible(True)
+        self.elevator_open_image[elevator_sn].setVisible(False)           
+        
+
 
 
     #TODO:在调度器中与本窗口连接，使得调度器可使用printMessage输出调度信息
@@ -290,11 +324,3 @@ class Ui_MainWindow(object):
 
 
 
-#  which_warnbtn = int(self.sender().objectName()[-1])
-#         print("点击了{0}号报警器".format(which_warnbtn))
-#         self.warnbtn[which_warnbtn].setStyleSheet("background-color: rgb(255, 255, 255);")
-#         self.MessBox = QtWidgets.QMessageBox.information(self.warnbtn[int(which_warnbtn)], "警告",  # 弹出警告框
-#                                                          "第" + str(which_warnbtn) + "号电梯已损坏, 不能继续使用")
-#         self.warnbtn[which_warnbtn].setStyleSheet("background-color: rgb(180, 0, 0);")
-
-#         self.Ctrl.warnCtrl(which_warnbtn)  # 调用控制器进行warnCtrl处理

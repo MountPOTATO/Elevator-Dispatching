@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:13:46
-LastEditTime: 2021-04-30 10:15:32
+LastEditTime: 2021-04-30 16:48:34
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\const.py
@@ -30,6 +30,9 @@ USER_DOWNSTAIR=2
 #内部按钮大小:
 INNER_X=31
 INNER_Y=31
+
+#更新时间
+UPDATE_GAP=1
 
 ##############################################工具######################################################
 class QSS_READER:
