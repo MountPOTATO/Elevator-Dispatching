@@ -1,11 +1,12 @@
 '''
-Author: mount_potato
-Date: 2021-04-26 16:13:46
-LastEditTime: 2021-04-30 16:48:34
+Author: your name
+Date: 2021-04-28 12:58:29
+LastEditTime: 2021-05-04 11:27:58
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
-FilePath: \os_elevator\const.py
+FilePath: \Elevator-Dispatching\src\utils.py
 '''
+
 ################################################常量区###################################################
 
 #电梯数量
@@ -19,9 +20,11 @@ DOOR_OPEN=0
 DOOR_CLOSE=1
 
 #电梯运行状态
-STANDBY=0
-GO_UP=1
-GO_DOWN=2
+OPEN_STANDBY=0
+CLOSE_STANDBY=1
+GO_UP=2
+GO_DOWN=3
+DEAD=4
 
 #用户运动状态
 USER_UPSTAIR=1
@@ -33,6 +36,25 @@ INNER_Y=31
 
 #更新时间
 UPDATE_GAP=1
+
+class State(object):
+    def __init__(self,num):
+        
+        self.door=num*[DOOR_CLOSE]
+        self.elevator=num*[CLOSE_STANDBY]
+        self.level=num*[1]
+        self.time=num*[0]
+    
+    
+    def setElevator(i,state:int):
+        self.elevator[i]=state
+    
+    def setDoor(i,state:int):
+        self.door[i]=state
+    
+    def setLevel(i,state:int):
+        self.level[i]=state
+    
 
 ##############################################工具######################################################
 class QSS_READER:
@@ -64,3 +86,4 @@ inner_warn_button_name="i_wbn_"
 inner_level_button_name="i_lbn_"
 outer_up_button_name="o_ubn_"
 outer_down_button_name="o_dbn_"
+

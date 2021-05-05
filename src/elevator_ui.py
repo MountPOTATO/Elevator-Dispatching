@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-04 10:03:20
+LastEditTime: 2021-05-04 11:30:30
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -20,19 +20,21 @@ from dispatcher import *
 class Ui_MainWindow(object):
     def __init__(self):
         self.dispatcher=Dispatcher(self)
+        self.state=State(NUM_ELEVATOR)
+
         #模块集合集合
         self.elevator_x=[]  #电梯图标坐标的x轴位置，动画位置与其位置相同
-        self.elevator_y=[]  #电梯图标坐标的y轴位置 
+        #self.elevator_y=[]  #电梯图标坐标的y轴位置 
         self.elevator_lcd_x=[] #电梯LCD楼层显示x轴位置
-        self.elevator_lcd_y=[] #电梯LCD楼层显示y轴位置
+        #self.elevator_lcd_y=[] #电梯LCD楼层显示y轴位置
         self.inner_open_button_x=[] #五台电梯内部按钮x轴位置，关闭，警告根据与它的相对位置推出
-        self.inner_open_button_y=[] #五台电梯内部按钮y轴位置
+        #self.inner_open_button_y=[] #五台电梯内部按钮y轴位置
         self.inner_level_one_button_x=[] #五台电梯内部一楼按钮x轴位置，其他楼层按钮根据与它的相对位置推出
-        self.inner_level_one_button_y=[] #五台电梯内部一楼按钮y轴位置
+        #self.inner_level_one_button_y=[] #五台电梯内部一楼按钮y轴位置
         self.outer_level_one_button_up_x=[] #电梯外部一楼上按钮x轴位置，其他楼层按钮根据与它的相对位置推出
-        self.outer_level_one_button_up_y=[] #电梯外部一楼上按钮y轴位置，其他楼层按钮根据与它的相对位置推出
+        #self.outer_level_one_button_up_y=[] #电梯外部一楼上按钮y轴位置，其他楼层按钮根据与它的相对位置推出
         self.outer_level_one_button_down_x=[] #电梯内部一楼下按钮x轴位置
-        self.outer_level_one_button_down_y=[] #电梯内部一楼下按钮y轴位置
+        #self.outer_level_one_button_down_y=[] #电梯内部一楼下按钮y轴位置
 
         self.elevator_open_image=[] #电梯开门图标的位置
         self.elevator_close_image=[] #电梯关门图标的位置
@@ -67,13 +69,6 @@ class Ui_MainWindow(object):
         lcd_number_style=QSS_READER.read("style/lcd_number.qss")
         outer_button_style=QSS_READER.read("style/outer_button.qss")
 
-        #设置Qt字体
-        #font=QtGui.QFont()
-        #font.setFamily("Microsoft YaHei")
-        #font.setPointSize(10)
-        #font.setBold(False)
-        #font.setItalic(False)
-        #font.setWeight(50)
 
         #组件位置信息初始化
         self.elevator_x.extend([30, 260, 490, 720, 950])    #初设电梯图片位置
@@ -88,20 +83,21 @@ class Ui_MainWindow(object):
 
         for i in range (0,NUM_ELEVATOR):
             
-            #放入开门电梯的图像
+            #放入开门电梯的图像:命名规则i_eoi_电梯编号
             self.elevator_open_image.append(QtWidgets.QLabel(self.central_widget))
             self.elevator_open_image[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.elevator_open_image[i].setPixmap(QtGui.QPixmap("resources/elevator/elevator_open.png"))
             self.elevator_open_image[i].setObjectName(open_img_name+str(i))
             self.elevator_open_image[i].setVisible(True)
             
-            #放入关门电梯的图像
+            #放入关门电梯的图像:命名规则i_eci_电梯编号
             self.elevator_close_image.append(QtWidgets.QLabel(self.central_widget))
             self.elevator_close_image[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.elevator_close_image[i].setPixmap(QtGui.QPixmap("resources/elevator/elevator_closed.png"))
             self.elevator_close_image[i].setObjectName(close_img_name+str(i))
             self.elevator_close_image[i].setVisible(False)
 
+            #放入电梯开门动画标签:命名规则i_ogl_电梯编号
             self.open_gif_label.append(QtWidgets.QLabel(self.central_widget))
             self.open_gif_label[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.open_gif_label[i].setMovie(QtGui.QMovie("resources/elevator/open_ani.gif"))
@@ -111,7 +107,7 @@ class Ui_MainWindow(object):
 
 
             #self.open_gif_label[i].show()
-
+            #放入电梯关门动画标签:命名规则i_cgl_电梯编号
             self.close_gif_label.append(QtWidgets.QLabel(self.central_widget))
             self.close_gif_label[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.close_gif_label[i].setMovie(QtGui.QMovie("resources/elevator/close_ani.gif"))
@@ -122,7 +118,7 @@ class Ui_MainWindow(object):
 
 
 
-            #放入LCD
+            #放入LCD:命名规则
             self.elevator_lcd.append(QtWidgets.QLCDNumber(self.central_widget))
             self.elevator_lcd[i].setStyleSheet(lcd_number_style)
             self.elevator_lcd[i].setGeometry(QtCore.QRect(self.elevator_lcd_x[i], 290, 51, 61))
@@ -244,9 +240,9 @@ class Ui_MainWindow(object):
         clicked_content=object_name[2:5]
         
         if clicked_content=='lbn':
-            level_number=int(object_name[-2]+object_name[-1])
+            level_number=int(object_name[-2]+object_name[-1])+1
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了"+str(level_number)+"按钮")
-
+            self.dispatcher.innerDispatch(level_number,)
             #TODO:添加调度命令
 
         elif clicked_content=="obn":
@@ -271,6 +267,7 @@ class Ui_MainWindow(object):
         clicked_content=object_name[2:5]
         if clicked_content=="ubn":
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了上楼按钮")
+            
             
         
         elif clicked_content=="dbn":
