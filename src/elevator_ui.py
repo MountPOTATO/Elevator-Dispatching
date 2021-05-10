@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-10 08:03:05
+LastEditTime: 2021-05-10 16:49:37
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -88,14 +88,14 @@ class Ui_MainWindow(object):
             self.elevator_open_image[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.elevator_open_image[i].setPixmap(QtGui.QPixmap("resources/elevator/elevator_open.png"))
             self.elevator_open_image[i].setObjectName(open_img_name+str(i))
-            self.elevator_open_image[i].setVisible(True)
+            self.elevator_open_image[i].setVisible(False)
             
             #放入关门电梯的图像:命名规则i_eci_电梯编号
             self.elevator_close_image.append(QtWidgets.QLabel(self.central_widget))
             self.elevator_close_image[i].setGeometry(QtCore.QRect(self.elevator_x[i], 360, 191,181))
             self.elevator_close_image[i].setPixmap(QtGui.QPixmap("resources/elevator/elevator_closed.png"))
             self.elevator_close_image[i].setObjectName(close_img_name+str(i))
-            self.elevator_close_image[i].setVisible(False)
+            self.elevator_close_image[i].setVisible(True)
 
             #放入电梯开门动画标签:命名规则i_ogl_电梯编号
             self.open_gif_label.append(QtWidgets.QLabel(self.central_widget))
@@ -242,23 +242,23 @@ class Ui_MainWindow(object):
         if clicked_content=='lbn': #电梯内部的楼层按钮
             level_number=int(object_name[-2]+object_name[-1])+1
             self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了"+str(level_number)+"楼按钮")
-            self.dispatcher.innerDispatch(elevator_sn,level_number,self.dispatcher.elevator_list[elevator_sn].level)
-            #TODO:添加调度命令
+            self.dispatcher.innerDispatch(elevator_sn,level_number)
+            #TODO:添加按钮样式
 
         elif clicked_content=="obn": #电梯内部的开门按钮
             self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了开门按钮")
 
-            self.open_animation(elevator_sn)
+            self.open_animation_start(elevator_sn)
             #self.dispatcher.responseOBN(elevator_sn)
         elif clicked_content=="cbn": #电梯内部的关门按钮
             self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了关门按钮")
 
-            self.close_animation(elevator_sn)
-            #TODO:添加调度命令
+            self.close_animation_start(elevator_sn)
+            #TODO:添加按钮样式
         elif clicked_content=="wbn":  #电梯内部报警按钮           
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
 
-            #TODO:添加调度命令
+            #TODO:添加按钮样式
 
 
     def onOuterButtonClicked(self):

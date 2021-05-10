@@ -20,9 +20,8 @@ GOING_DOWN=3
 STANDBY=4
 DEAD=5
 
-#用户运动状态
-USER_UPSTAIR=1
-USER_DOWNSTAIR=2
+#停顿时间
+STANDBY_TIME=4
 
 #内部按钮大小:
 INNER_X=31
@@ -45,14 +44,17 @@ class Elevator(object):
         self.door=DOOR_CLOSE
         self.state=STANDBY
         self.level=1
-        self.time=0
+        self.state_time=0
 
         
         self.by_task=[]
         self.oppo_task=[]
     
     def setDoor(self,doorstate:int):
-        self.state=doorstate
+        self.door=doorstate
+    
+    def setState(self,elestate:int):
+        self.state=elestate
 
     def setLevel(self,target_level:int):
         self.level=target_level
@@ -79,6 +81,10 @@ class Elevator(object):
             self.oppo_task.sort()
         else:
             pass
+    
+
+    def getFirstByTask(self)->int:
+        return self.by_task[0]
 
 
 
