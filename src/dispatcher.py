@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-10 16:48:33
+LastEditTime: 2021-05-10 19:50:50
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -110,6 +110,9 @@ class Dispatcher(object):
 
     def update(self):
         for i,elevator in enumerate(self.elevator_list):
+            #电梯上下楼标识动画
+            self.main_window.up_down_animation_show(elevator.state,i)
+
             #电梯静止时的状态更新
             if elevator.state==STANDBY and elevator.state_time!=0:
                 elevator.state_time-=1

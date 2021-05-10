@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-10 16:49:37
+LastEditTime: 2021-05-10 20:05:42
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -35,11 +35,14 @@ class Ui_MainWindow(object):
         #self.outer_level_one_button_up_y=[] #电梯外部一楼上按钮y轴位置，其他楼层按钮根据与它的相对位置推出
         self.outer_level_one_button_down_x=[] #电梯内部一楼下按钮x轴位置
         #self.outer_level_one_button_down_y=[] #电梯内部一楼下按钮y轴位置
+        self.up_down_gif_x=[] #电梯上下标识动画位置
 
         self.elevator_open_image=[] #电梯开门图标的位置
         self.elevator_close_image=[] #电梯关门图标的位置
         self.open_gif_label=[]  #电梯开门动画标签，用时1s
         self.close_gif_label=[]  #电梯关门动画标签，用时1s
+        self.up_gif_label=[]   #up动画标签 
+        self.down_gif_label=[] #down动画标签
         self.elevator_lcd=[] #电梯LCD楼层
 
         self.inner_open_button=[]   #电梯内部开门按钮
@@ -73,10 +76,12 @@ class Ui_MainWindow(object):
         #组件位置信息初始化
         self.elevator_x.extend([30, 260, 490, 720, 950])    #初设电梯图片位置
         self.elevator_lcd_x.extend([100,330,560,790,1020])  #初设电梯LCD位置
+        self.up_down_gif_x.extend([160,390,620,850,1080])   #初设上下gif位置
         self.inner_open_button_x.extend([70,300,530,760,990])
         self.inner_level_one_button_x.extend([50,280,510,740,970])
         self.outer_level_one_button_up_x.extend([250,600])
         self.outer_level_one_button_down_x.extend(([300,650]))
+        
 
         #输出框设置
         self.textBrowser.setGeometry(QtCore.QRect(720,560,441,250))
@@ -116,7 +121,21 @@ class Ui_MainWindow(object):
             self.close_gif_label[i].movie().setPaused(True)
             self.close_gif_label[i].movie().setSpeed(70)
 
+            self.up_gif_label.append(QtWidgets.QLabel(self.central_widget))
+            self.up_gif_label[i].setGeometry(QtCore.QRect(self.up_down_gif_x[i], 290, 51,61))
+            self.up_gif_label[i].setMovie(QtGui.QMovie("resources/elevator/up.gif"))
+            self.up_gif_label[i].setObjectName(up_gif_name+str(i))
+            self.up_gif_label[i].setVisible(False)
+            self.up_gif_label[i].movie().setPaused(False)
+            self.up_gif_label[i].movie().setSpeed(100)
 
+            self.down_gif_label.append(QtWidgets.QLabel(self.central_widget))
+            self.down_gif_label[i].setGeometry(QtCore.QRect(self.up_down_gif_x[i], 290, 51,61))
+            self.down_gif_label[i].setMovie(QtGui.QMovie("resources/elevator/down.gif"))
+            self.down_gif_label[i].setObjectName(down_gif_name+str(i))
+            self.down_gif_label[i].setVisible(False)
+            self.down_gif_label[i].movie().setPaused(False)
+            self.down_gif_label[i].movie().setSpeed(100)            
 
             #放入LCD:命名规则
             self.elevator_lcd.append(QtWidgets.QLCDNumber(self.central_widget))
@@ -312,6 +331,16 @@ class Ui_MainWindow(object):
         self.elevator_open_image[elevator_sn].setVisible(False)           
         
 
+    def up_down_animation_show(self,order,elevator_sn):
+        if order==GOING_UP:
+            self.up_gif_label[elevator_sn].setVisible(True)
+            self.down_gif_label[elevator_sn].setVisible(False)
+        elif order==GOING_DOWN:
+            self.down_gif_label[elevator_sn].setVisible(True)
+            self.up_gif_label[elevator_sn].setVisible(False)
+        else:
+            self.up_gif_label[elevator_sn].setVisible(False)
+            self.down_gif_label[elevator_sn].setVisible(False)
 
 
     #TODO:在调度器中与本窗口连接，使得调度器可使用printMessage输出调度信息
