@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-10 19:50:50
+LastEditTime: 2021-05-11 00:29:19
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -28,8 +28,26 @@ class Dispatcher(object):
 
     
     def responseOBN(self,elevator_sn):
-        pass
+        if self.elevator_list[elevator_sn].state==STANDBY:
+            self.main_window.open_animation_start(elevator_sn)
+            self.elevator_list[elevator_sn].state_time=STANDBY_TIME
+        elif self.elevator_list[elevator_sn].state==DEAD:
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯已故障，开门命令无效")       
+        else:
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯运行中，开门命令无效")
     
+    def responseCBN(self,elevator_sn):
+        if self.elevator_list[elevator_sn].state==STANDBY and self.elevator_list[elevator_sn].state_time>=1:
+            self.elevator_list[elevator_sn].state_time=1
+            self.main_window.close_animation_start(elevator_sn)
+        elif self.elevator_list[elevator_sn].state==DEAD:
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯已故障，关门命令无效") 
+        elif self.elevator_list[elevator_sn].state==GOING_DOWN or self.elevator_list[elevator_sn].state==GOING_UP:
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯运行中，关门命令无效")
+            
+        
+
+
 
     def innerDispatch(self,elevator_sn,target_level):
         current_state=self.elevator_list[elevator_sn].state
@@ -40,6 +58,7 @@ class Dispatcher(object):
             if target_level==curr_level:
                 self.elevator_list[elevator_sn].setDoor(DOOR_OPEN)
                 self.main_window.open_animation_start(elevator_sn)
+                self.elevator_list[elevator_sn].state_time=STANDBY_TIME
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             else:
                 self.elevator_list[elevator_sn].addByTask(target_level)
@@ -101,11 +120,12 @@ class Dispatcher(object):
         if distance[i]==0:
             self.door=DOOR_OPEN
             self.main_window.open_animation_start(i)
+            self.elevator_list[i].state_time=STANDBY_TIME
             #TODO:按钮美化
         else:
             self.elevator_list[i].addByTask(level)
             #TODO:按钮美化
-            print("test")
+            
 
 
     def update(self):
@@ -115,11 +135,15 @@ class Dispatcher(object):
 
             #电梯静止时的状态更新
             if elevator.state==STANDBY and elevator.state_time!=0:
-                elevator.state_time-=1
                 if elevator.state_time==1:
                     self.main_window.close_animation_start(i)
+                elevator.state_time-=1
                 continue    
             
+            if elevator.state==STANDBY and elevator.state_time==0:
+                elevator.has_close_animation=False
+                elevator.has_open_animation=False
+
             #对含有任务的电梯进行状态更新
             if len(elevator.by_task)!=0:
                 if elevator.state==STANDBY and elevator.state_time==0:

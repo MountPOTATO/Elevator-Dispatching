@@ -45,7 +45,8 @@ class Elevator(object):
         self.state=STANDBY
         self.level=1
         self.state_time=0
-
+        self.has_open_animation=False
+        self.has_close_animation=False
         
         self.by_task=[]
         self.oppo_task=[]
@@ -81,7 +82,11 @@ class Elevator(object):
             self.oppo_task.sort()
         else:
             pass
-    
+    def endOpenAniState(self):
+        self.has_open_animation=False
+
+    def endCloseAniState(self):
+        self.has_close_animation=False
 
     def getFirstByTask(self)->int:
         return self.by_task[0]

@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-10 20:05:42
+LastEditTime: 2021-05-11 00:35:48
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -60,7 +60,7 @@ class Ui_MainWindow(object):
         MainWindow.setStyleSheet("")
         self.central_widget=QtWidgets.QWidget(MainWindow)
         self.central_widget.setObjectName("centralWidget")
-
+        MainWindow.setCentralWidget(self.central_widget)
 
 
         self.textBrowser=QtWidgets.QTextBrowser(self.central_widget)
@@ -204,9 +204,10 @@ class Ui_MainWindow(object):
             self.outer_down_button[j].clicked.connect(MainWindow.onOuterButtonClicked)
         
 
+
         
         #Menubar和Statebar设定
-        MainWindow.setCentralWidget(self.central_widget)
+        
         self.menubar=QtWidgets.QMenuBar(MainWindow)
         self.statusbar=QtWidgets.QStatusBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0,0,1550,18))
@@ -218,7 +219,6 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        #self.printMessage("电梯1")
         
             
     def retranslateUi(self, MainWindow):
@@ -235,6 +235,8 @@ class Ui_MainWindow(object):
         for j in range(0,NUM_LEVEL):
             self.outer_up_button[j].setText(_translate("MainWindow","▲"))
             self.outer_down_button[j].setText(_translate("MainWindow","▼"))
+        
+
 
 
     def printMessage(self,text_string):
@@ -266,14 +268,13 @@ class Ui_MainWindow(object):
 
         elif clicked_content=="obn": #电梯内部的开门按钮
             self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了开门按钮")
+            self.dispatcher.responseOBN(elevator_sn)
 
-            self.open_animation_start(elevator_sn)
-            #self.dispatcher.responseOBN(elevator_sn)
+
         elif clicked_content=="cbn": #电梯内部的关门按钮
             self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了关门按钮")
+            self.dispatcher.responseCBN(elevator_sn)
 
-            self.close_animation_start(elevator_sn)
-            #TODO:添加按钮样式
         elif clicked_content=="wbn":  #电梯内部报警按钮           
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
 
@@ -287,21 +288,25 @@ class Ui_MainWindow(object):
         if clicked_content=="ubn": #电梯外部的上楼按钮
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了上楼按钮")
             #TODO:按钮样式设定
-            self.dispatcher.outerDispatch(UP,level_number)
+            self.dispatcher.outerDispatch(UP,level_number+1)
             
         
         elif clicked_content=="dbn": #电梯外部的下楼按钮
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了下楼按钮")
             #TODO:按钮样式设定
-            self.dispatcher.outerDispatch(DOWN,level_number)
+            self.dispatcher.outerDispatch(DOWN,level_number+1)
 
 
     def open_animation_start(self,elevator_sn):
-        self.elevator_open_image[elevator_sn].setVisible(False)
-        self.elevator_close_image[elevator_sn].setVisible(False)
-        self.open_gif_label[elevator_sn].movie().jumpToFrame(0)
-        self.open_gif_label[elevator_sn].movie().start()
-        self.open_gif_label[elevator_sn].show()
+        if self.dispatcher.elevator_list[elevator_sn].has_open_animation==False:
+            self.dispatcher.elevator_list[elevator_sn].has_close_animation=False
+            self.elevator_open_image[elevator_sn].setVisible(False)
+            self.elevator_close_image[elevator_sn].setVisible(False)
+            self.open_gif_label[elevator_sn].movie().jumpToFrame(0)
+            self.open_gif_label[elevator_sn].movie().start()
+            self.open_gif_label[elevator_sn].show()
+            self.close_gif_label[elevator_sn].setVisible(False)
+            self.dispatcher.elevator_list[elevator_sn].has_open_animation=True
 
         thread_op=threading.Timer(0.7,self.open_animation_end,(elevator_sn,))
         thread_op.start()
@@ -310,16 +315,20 @@ class Ui_MainWindow(object):
         self.open_gif_label[elevator_sn].movie().setPaused(True)
         self.open_gif_label[elevator_sn].setVisible(False)
         self.elevator_open_image[elevator_sn].setVisible(True)
-        self.elevator_close_image[elevator_sn].setVisible(False)
-        
+        self.elevator_close_image[elevator_sn].setVisible(False)    
+        self.dispatcher.elevator_list[elevator_sn].state_time=STANDBY_TIME
 
 
     def close_animation_start(self,elevator_sn):
-        self.elevator_open_image[elevator_sn].setVisible(False)
-        self.elevator_close_image[elevator_sn].setVisible(False)
-        self.close_gif_label[elevator_sn].movie().jumpToFrame(0)
-        self.close_gif_label[elevator_sn].movie().start()
-        self.close_gif_label[elevator_sn].show()
+        if self.dispatcher.elevator_list[elevator_sn].has_close_animation==False:
+            self.dispatcher.elevator_list[elevator_sn].has_open_animation=False
+            self.elevator_open_image[elevator_sn].setVisible(False)
+            self.elevator_close_image[elevator_sn].setVisible(False)
+            self.close_gif_label[elevator_sn].movie().jumpToFrame(0)
+            self.close_gif_label[elevator_sn].movie().start()
+            self.close_gif_label[elevator_sn].show()
+            self.open_gif_label[elevator_sn].setVisible(False)
+            self.dispatcher.elevator_list[elevator_sn].has_close_animation=True
 
         thread_op=threading.Timer(0.7,self.close_animation_end,(elevator_sn,))
         thread_op.start()
@@ -328,7 +337,8 @@ class Ui_MainWindow(object):
         self.close_gif_label[elevator_sn].movie().setPaused(True)
         self.close_gif_label[elevator_sn].setVisible(False)
         self.elevator_close_image[elevator_sn].setVisible(True)
-        self.elevator_open_image[elevator_sn].setVisible(False)           
+        self.elevator_open_image[elevator_sn].setVisible(False) 
+        self.dispatcher.elevator_list[elevator_sn].state_time=0  
         
 
     def up_down_animation_show(self,order,elevator_sn):
