@@ -1,13 +1,6 @@
-'''
-Author: your name
-Date: 2021-04-28 12:58:29
-LastEditTime: 2021-05-04 11:27:58
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: \Elevator-Dispatching\src\utils.py
-'''
 
-################################################常量区###################################################
+
+#################################################常量区###################################################
 
 #电梯数量
 NUM_ELEVATOR=5
@@ -22,9 +15,10 @@ DOOR_CLOSE=1
 #电梯运行状态
 OPEN_STANDBY=0
 CLOSE_STANDBY=1
-GO_UP=2
-GO_DOWN=3
-DEAD=4
+GOING_UP=2
+GOING_DOWN=3
+STANDBY=4
+DEAD=5
 
 #用户运动状态
 USER_UPSTAIR=1
@@ -37,24 +31,56 @@ INNER_Y=31
 #更新时间
 UPDATE_GAP=1
 
-class State(object):
-    def __init__(self,num):
+#电梯外部按钮命令
+UP=1
+DOWN=2
+
+#定义无穷大:
+INF=50
+
+
+
+class Elevator(object):
+    def __init__(self):
+        self.door=DOOR_CLOSE
+        self.state=STANDBY
+        self.level=1
+        self.time=0
+
         
-        self.door=num*[DOOR_CLOSE]
-        self.elevator=num*[CLOSE_STANDBY]
-        self.level=num*[1]
-        self.time=num*[0]
+        self.by_task=[]
+        self.oppo_task=[]
     
+    def setDoor(self,doorstate:int):
+        self.state=doorstate
+
+    def setLevel(self,target_level:int):
+        self.level=target_level
     
-    def setElevator(i,state:int):
-        self.elevator[i]=state
+    def addByTask(self,target_level:int):
+        self.by_task.append(target_level)
     
-    def setDoor(i,state:int):
-        self.door[i]=state
-    
-    def setLevel(i,state:int):
-        self.level[i]=state
-    
+    def addOppoTask(self,target_level:int):
+        self.oppo_task.append(target_level)
+
+    def arrangeByTask(self):
+        if self.state==GOING_UP:
+            self.by_task.sort()
+        elif self.state==GOING_DOWN:
+            self.by_task.sort()
+            self.by_task.reverse()
+        else:
+            pass    
+    def arrangeOppoTask(self):
+        if self.state==GOING_UP:
+            self.oppo_task.sort()
+            self.oppo_task.reverse()
+        elif self.state==GOING_DOWN:
+            self.oppo_task.sort()
+        else:
+            pass
+
+
 
 ##############################################工具######################################################
 class QSS_READER:

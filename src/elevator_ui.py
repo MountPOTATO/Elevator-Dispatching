@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-04 11:30:30
+LastEditTime: 2021-05-10 08:03:05
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -20,7 +20,7 @@ from dispatcher import *
 class Ui_MainWindow(object):
     def __init__(self):
         self.dispatcher=Dispatcher(self)
-        self.state=State(NUM_ELEVATOR)
+        
 
         #模块集合集合
         self.elevator_x=[]  #电梯图标坐标的x轴位置，动画位置与其位置相同
@@ -239,23 +239,23 @@ class Ui_MainWindow(object):
         elevator_sn=int(object_name[6])
         clicked_content=object_name[2:5]
         
-        if clicked_content=='lbn':
+        if clicked_content=='lbn': #电梯内部的楼层按钮
             level_number=int(object_name[-2]+object_name[-1])+1
-            self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了"+str(level_number)+"按钮")
-            self.dispatcher.innerDispatch(level_number,)
+            self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了"+str(level_number)+"楼按钮")
+            self.dispatcher.innerDispatch(elevator_sn,level_number,self.dispatcher.elevator_list[elevator_sn].level)
             #TODO:添加调度命令
 
-        elif clicked_content=="obn":
-            self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了开门按钮")
+        elif clicked_content=="obn": #电梯内部的开门按钮
+            self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了开门按钮")
 
             self.open_animation(elevator_sn)
             #self.dispatcher.responseOBN(elevator_sn)
-        elif clicked_content=="cbn":
-            self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了关门按钮")
+        elif clicked_content=="cbn": #电梯内部的关门按钮
+            self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了关门按钮")
 
             self.close_animation(elevator_sn)
             #TODO:添加调度命令
-        elif clicked_content=="wbn":            
+        elif clicked_content=="wbn":  #电梯内部报警按钮           
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
 
             #TODO:添加调度命令
@@ -265,16 +265,19 @@ class Ui_MainWindow(object):
         object_name=self.sender().objectName()
         level_number=int(object_name[6:])
         clicked_content=object_name[2:5]
-        if clicked_content=="ubn":
+        if clicked_content=="ubn": #电梯外部的上楼按钮
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了上楼按钮")
-            
+            #TODO:按钮样式设定
+            self.dispatcher.outerDispatch(UP,level_number)
             
         
-        elif clicked_content=="dbn":
+        elif clicked_content=="dbn": #电梯外部的下楼按钮
             self.printMessage("OP:使用者在电梯外部"+str(level_number+1)+"楼点击了下楼按钮")
+            #TODO:按钮样式设定
+            self.dispatcher.outerDispatch(DOWN,level_number)
 
 
-    def open_animation(self,elevator_sn):
+    def open_animation_start(self,elevator_sn):
         self.elevator_open_image[elevator_sn].setVisible(False)
         self.elevator_close_image[elevator_sn].setVisible(False)
         self.open_gif_label[elevator_sn].movie().jumpToFrame(0)
@@ -292,7 +295,7 @@ class Ui_MainWindow(object):
         
 
 
-    def close_animation(self,elevator_sn):
+    def close_animation_start(self,elevator_sn):
         self.elevator_open_image[elevator_sn].setVisible(False)
         self.elevator_close_image[elevator_sn].setVisible(False)
         self.close_gif_label[elevator_sn].movie().jumpToFrame(0)

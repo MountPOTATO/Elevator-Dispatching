@@ -1,19 +1,8 @@
-'''
-Author: mount_potato
-Date: 2021-04-26 16:40:26
-LastEditTime: 2021-04-30 16:21:56
-LastEditors: Please set LastEditors
-Description: In User Settings Edit
-FilePath: \os_elevator\main.py
-'''
-
 import sys,threading
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
-
 from utils import *
 from elevator_ui import *
-
 
 
 class ElevatorInterface(QtWidgets.QMainWindow,Ui_MainWindow):
@@ -32,3 +21,4 @@ if __name__=='__main__':
     main_window.show()
 
     sys.exit(app.exec())
+    
