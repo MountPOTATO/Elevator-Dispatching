@@ -114,6 +114,7 @@ class QSS_READER:
 
 open_img_name="i_eoi_"
 close_img_name="i_eci_"
+mark_img_name="i_emi_"
 open_gif_name="i_ogl_"
 close_gif_name="i_cgl_"
 up_gif_name="i_ugl_"

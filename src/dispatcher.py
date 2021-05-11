@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-11 00:29:19
+LastEditTime: 2021-05-11 11:08:31
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -45,7 +45,43 @@ class Dispatcher(object):
         elif self.elevator_list[elevator_sn].state==GOING_DOWN or self.elevator_list[elevator_sn].state==GOING_UP:
             self.main_window.printMessage(str(elevator_sn+1)+"号电梯运行中，关门命令无效")
             
+    def responseWBN(self,elevator_sn):
+        by_task_len=len(self.elevator_list[elevator_sn].by_task)
+        oppo_task_len=len(self.elevator_list[elevator_sn].oppo_task)
+        if self.elevator_list[elevator_sn].state==STANDBY and by_task_len==0 and oppo_task_len==0 :
+            self.elevator_list[elevator_sn].state=DEAD
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯报告损坏，已停用")
+
+            
+
+            for level_button in self.main_window.inner_level_button[elevator_sn]:
+                level_button.setStyleSheet(self.main_window.warn_long_pressed_style)
+                level_button.setEnabled(False)
+
+            all_down=True
+            for elevator in self.elevator_list:
+                if elevator.state!=DEAD:
+                    all_down=False
+            if all_down==True:
+                self.main_window.printMessage("所有电梯全部停用")
+                #停用全部外调度按钮
+                for up_button in self.main_window.outer_up_button:
+                    up_button.setStyleSheet(self.main_window.outer_long_pressed_style)
+                    up_button.setEnabled(False)
+                for down_button in self.main_window.outer_down_button:
+                    down_button.setStyleSheet(self.main_window.outer_long_pressed_style)
+                    down_button.setEnabled(False)
+
+        elif self.elevator_list[elevator_sn].state==DEAD:
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯已报告损坏，无需重复报警")
+            self.main_window.inner_warn_button[elevator_sn].setStyleSheet(self.main_window.warn_button_style)
+            self.main_window.inner_warn_button[elevator_sn].setEnabled(True)
+        else:
+            self.main_window.printMessage(str(elevator_sn+1)+"号电梯仍运行中，报警无效")
+            self.main_window.inner_warn_button[elevator_sn].setStyleSheet(self.main_window.warn_button_style)
+            self.main_window.inner_warn_button[elevator_sn].setEnabled(True)
         
+
 
 
 
@@ -56,7 +92,10 @@ class Dispatcher(object):
             self.main_window.printMessage(str(elevator_sn+1)+"号电梯已损坏，操作无效")
         elif current_state==STANDBY:
             if target_level==curr_level:
-                self.elevator_list[elevator_sn].setDoor(DOOR_OPEN)
+                #恢复按钮
+                self.main_window.inner_level_button[elevator_sn][target_level-1].setStyleSheet(self.main_window.level_button_style)
+                self.main_window.inner_level_button[elevator_sn][target_level-1].setEnabled(True)
+                
                 self.main_window.open_animation_start(elevator_sn)
                 self.elevator_list[elevator_sn].state_time=STANDBY_TIME
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
@@ -68,7 +107,10 @@ class Dispatcher(object):
             
         elif current_state==GOING_UP:
             if target_level==curr_level:
-                self.elevator_list[elevator_sn].setDoor(DOOR_OPEN)
+                #恢复按钮
+                self.main_window.inner_level_button[elevator_sn][target_level-1].setStyleSheet(self.main_window.level_button_style)
+                self.main_window.inner_level_button[elevator_sn][target_level-1].setEnabled(True)
+
                 self.main_window.open_animation_start(elevator_sn)
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             elif target_level>curr_level:
@@ -82,7 +124,10 @@ class Dispatcher(object):
         
         elif current_state==GOING_DOWN:
             if target_level==curr_level:
-                self.elevator_list[elevator_sn].setDoor(DOOR_OPEN)
+                #恢复按钮
+                self.main_window.inner_level_button[elevator_sn][target_level-1].setStyleSheet(self.main_window.level_button_style)
+                self.main_window.inner_level_button[elevator_sn][target_level-1].setEnabled(True)
+
                 self.main_window.open_animation_start(elevator_sn)   
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")  
             elif target_level<curr_level:
@@ -101,6 +146,9 @@ class Dispatcher(object):
     def outerDispatch(self,order,level):
 
         distance=NUM_ELEVATOR*[INF]
+
+
+
         for i in range(0,NUM_ELEVATOR):
             #对所有可用的电梯
             if self.elevator_list[i].state!=DEAD:
@@ -118,7 +166,11 @@ class Dispatcher(object):
         i=distance.index(min(distance))
         self.main_window.printMessage("电梯"+str(i+1)+"号离当前用户最近，正在前往")
         if distance[i]==0:
-            self.door=DOOR_OPEN
+            self.main_window.outer_up_button[level-1].setStyleSheet(self.main_window.outer_button_style)
+            self.main_window.outer_down_button[level-1].setStyleSheet(self.main_window.outer_button_style)
+            self.main_window.outer_up_button[level-1].setEnabled(True)
+            self.main_window.outer_down_button[level-1].setEnabled(True)
+
             self.main_window.open_animation_start(i)
             self.elevator_list[i].state_time=STANDBY_TIME
             #TODO:按钮美化
@@ -154,20 +206,27 @@ class Dispatcher(object):
                 else:
                     target_level=elevator.getFirstByTask()
                     if elevator.level<target_level:
-                        elevator.setState(GOING_UP)
-                        #TODO:按钮设置
+                        elevator.setState(GOING_UP)                        
                         elevator.level+=1
                         self.main_window.elevator_lcd[i].setProperty("value",elevator.level)
                     elif elevator.level>target_level:
-                        elevator.setState(GOING_DOWN)
-                        #TODO:按钮设置
+                        elevator.setState(GOING_DOWN)                        
                         elevator.level-=1
                         self.main_window.elevator_lcd[i].setProperty("value",elevator.level)
                     
                     else:#电梯到达
+                        #恢复按钮
+                        if elevator.state==GOING_UP:
+                            self.main_window.outer_up_button[elevator.level-1].setStyleSheet(self.main_window.outer_button_style)
+                            self.main_window.outer_up_button[elevator.level-1].setEnabled(True)
+                        if elevator.state==GOING_DOWN:
+                            self.main_window.outer_down_button[elevator.level-1].setStyleSheet(self.main_window.outer_button_style)
+                            self.main_window.outer_down_button[elevator.level-1].setEnabled(True)
+                        self.main_window.inner_level_button[i][target_level-1].setStyleSheet(self.main_window.level_button_style)
+                        self.main_window.inner_level_button[i][target_level-1].setEnabled(True)                           
                         self.main_window.open_animation_start(i)
                         elevator.setState(STANDBY)
-                        elevator.state_time=4
+                        elevator.state_time=STANDBY_TIME
                         self.main_window.elevator_lcd[i].setProperty("value",elevator.level)
                         elevator.by_task.pop(0)
                         #TODO:按钮设置
