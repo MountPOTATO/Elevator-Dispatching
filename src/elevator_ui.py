@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-12 11:26:28
+LastEditTime: 2021-05-12 12:32:16
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -40,6 +40,7 @@ class Ui_MainWindow(object):
 
         self.up_down_gif_x=[] #电梯上下标识动画位置
         self.mark_image_x=[] #电梯标号图片位置设置
+        self.level_label_x=[] #楼层指示位置
 
         self.elevator_open_image=[] #电梯开门图标的位置
         self.elevator_close_image=[] #电梯关门图标的位置
@@ -50,6 +51,7 @@ class Ui_MainWindow(object):
         self.down_gif_label=[] #down动画标签
         self.elevator_lcd=[] #电梯LCD楼层
         self.repair_button=[] #电梯修理按钮
+        self.level_label=[] # 楼层指示
 
         self.inner_open_button=[]   #电梯内部开门按钮
         self.inner_close_button=[]  #电梯内部关门按钮
@@ -63,7 +65,7 @@ class Ui_MainWindow(object):
     def setupUi(self,MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1240,980)
-        MainWindow.setStyleSheet("")
+        MainWindow.setStyleSheet("background-color:rgb(220,220,220);")
         self.central_widget=QtWidgets.QWidget(MainWindow)
         self.central_widget.setObjectName("centralWidget")
         MainWindow.setCentralWidget(self.central_widget)
@@ -80,6 +82,7 @@ class Ui_MainWindow(object):
         self.level_long_pressed_style=QSS_READER.read("style/inner_level_long_pressed.qss")
         self.warn_long_pressed_style=QSS_READER.read("style/inner_warn_long_pressed.qss")
         self.outer_long_pressed_style=QSS_READER.read("style/outer_long_pressed.qss")
+        self.text_style=QSS_READER.read("style/label_text.qss")
         self.repair_style="QPushButton{image:url(:/resources/mark/repair.png);}"
 
         #组件位置信息初始化
@@ -89,6 +92,7 @@ class Ui_MainWindow(object):
         self.mark_image_x.extend([50,280,510,740,970])      #初设电梯标号图片位置
         self.inner_open_button_x.extend([70,300,530,760,990])
         self.inner_level_one_button_x.extend([50,280,510,740,970])
+        self.level_label_x.extend([160,510])
         self.outer_level_one_button_up_x.extend([250,600])
         self.outer_level_one_button_down_x.extend([300,650])
         self.repair_button_x.extend([755,835,915,995,1075]) #初设电梯修理按钮位置
@@ -230,9 +234,11 @@ class Ui_MainWindow(object):
             #外部操作按钮设置槽函数onOuterButtonClicked
             self.outer_up_button[j].clicked.connect(MainWindow.onOuterButtonClicked)
             self.outer_down_button[j].clicked.connect(MainWindow.onOuterButtonClicked)
-        
 
-
+            self.level_label.append(QtWidgets.QLabel(self.central_widget))
+            self.level_label[j].setGeometry(QtCore.QRect(self.level_label_x[int(j / 10)], 910 - 40 * (j % 10), 66,31))
+            self.level_label[j].setObjectName("level_label"+str(j))
+            self.level_label[j].setStyleSheet(self.text_style)
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -254,6 +260,7 @@ class Ui_MainWindow(object):
         for j in range(0,NUM_LEVEL):
             self.outer_up_button[j].setText(_translate("MainWindow","▲"))
             self.outer_down_button[j].setText(_translate("MainWindow","▼"))
+            self.level_label[j].setText(_translate("MainWindow","Level "+("0" if j<9 else "")+str(j+1)))
         
 
 

@@ -88,8 +88,8 @@ class Elevator(object):
     def endCloseAniState(self):
         self.has_close_animation=False
 
-    def getFirstByTask(self)->int:
-        return self.by_task[0]
+    def getFirstByTask(self):
+        return self.by_task[0][0]
     
     def recover(self):
         self.state=STANDBY

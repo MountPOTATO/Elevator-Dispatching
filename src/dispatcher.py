@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-12 11:22:26
+LastEditTime: 2021-05-12 11:56:33
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -120,7 +120,7 @@ class Dispatcher(object):
                 self.elevator_list[elevator_sn].state_time=STANDBY_TIME
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             else:
-                self.elevator_list[elevator_sn].addByTask(target_level)
+                self.elevator_list[elevator_sn].addByTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeByTask()
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
                 print(self.elevator_list[elevator_sn].by_task)
@@ -134,11 +134,11 @@ class Dispatcher(object):
                 self.main_window.open_animation_start(elevator_sn)
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             elif target_level>curr_level:
-                self.elevator_list[elevator_sn].addByTask(target_level)
+                self.elevator_list[elevator_sn].addByTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeByTask()
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
             else: #target_level<curr_level
-                self.elevator_list[elevator_sn].addOppoTask(target_level)
+                self.elevator_list[elevator_sn].addOppoTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeOppoTask()
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
         
@@ -151,11 +151,11 @@ class Dispatcher(object):
                 self.main_window.open_animation_start(elevator_sn)   
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")  
             elif target_level<curr_level:
-                self.elevator_list[elevator_sn].addByTask(target_level)
+                self.elevator_list[elevator_sn].addByTask((target_level,INNER))
                 self.elevator_list[elevator_sn].arrangeByTask()
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
             else: #target_level>curr_level
-                self.elevator_list[elevator_sn].addOppoTask(target_level)
+                self.elevator_list[elevator_sn].addOppoTask((target_level,INNER))
                 self.elevator_list[elevator_sn].arrangeOppoTask() 
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往") 
         else:
@@ -204,7 +204,7 @@ class Dispatcher(object):
             self.elevator_list[i].state_time=STANDBY_TIME
             
         else:
-            self.elevator_list[i].addByTask(level)
+            self.elevator_list[i].addByTask([level,order])
             self.elevator_list[i].curr_button=UP if order==UP else DOWN
             
             
@@ -246,11 +246,11 @@ class Dispatcher(object):
                     
                     else:#电梯到达
                         #恢复按钮
-                        if elevator.curr_button==UP:
+                        if elevator.by_task[0][1]==UP:
                             elevator.curr_button=INNER
                             self.main_window.outer_up_button[elevator.level-1].setStyleSheet(self.main_window.outer_button_style)
                             self.main_window.outer_up_button[elevator.level-1].setEnabled(True)
-                        elif elevator.curr_button==DOWN:
+                        elif elevator.by_task[0][1]==DOWN:
                             elevator.curr_button=INNER
                             self.main_window.outer_down_button[elevator.level-1].setStyleSheet(self.main_window.outer_button_style)
                             self.main_window.outer_down_button[elevator.level-1].setEnabled(True)
