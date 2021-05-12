@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-12 16:48:55
+LastEditTime: 2021-05-12 19:46:54
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -24,7 +24,7 @@ class Ui_MainWindow(object):
         #模块位置集合
         #电梯图标坐标的位置，动画位置与其位置相同
         self.elevator_x=[]  
-        self.elevator_y=0 
+        self.elevator_y=0
         #电梯LCD楼层显示位置
         self.elevator_lcd_x=[] #电梯LCD楼层显示x轴位置
         self.elevator_lcd_y=0
@@ -226,7 +226,6 @@ class Ui_MainWindow(object):
             self.inner_warn_button[i].clicked.connect(MainWindow.onInnerButtonClicked)
 
             #添加每个电梯的内部楼层按钮:命名规则i_lbn_电梯编号
-            # self.inner_level_button.append(QtWidgets.QPushButton(self.central_widget))
             for j in range(0,NUM_LEVEL):
                 self.inner_level_button[i].append(QtWidgets.QPushButton(self.central_widget))
                 self.inner_level_button[i][j].setStyleSheet(self.level_button_style)
@@ -267,6 +266,8 @@ class Ui_MainWindow(object):
             self.level_label[j].setObjectName("level_label"+str(j))
             self.level_label[j].setStyleSheet(self.text_style)
 
+
+        self.printMessage("欢迎使用电梯调度系统")
 
 
         self.retranslateUi(MainWindow)
@@ -339,7 +340,7 @@ class Ui_MainWindow(object):
             self.dispatcher.responseCBN(elevator_sn)
 
         elif clicked_content=="wbn":  #电梯内部报警按钮           
-            self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
+            self.printMessage("使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
             #设置按钮长按
             self.inner_warn_button[elevator_sn].setStyleSheet(self.warn_long_pressed_style)
             self.inner_warn_button[elevator_sn].setEnabled(False)
@@ -356,7 +357,7 @@ class Ui_MainWindow(object):
         #按钮性质
         clicked_content=object_name[2:5]
         if clicked_content=="ubn": #电梯外部的上楼按钮
-            self.printMessage("OP:使用者在电梯外部"+str(level_index+1)+"楼点击了上楼按钮")
+            self.printMessage("使用者在电梯外部"+str(level_index+1)+"楼点击了上楼按钮")
             #设置按钮长按
             self.outer_up_button[level_index].setStyleSheet(self.outer_long_pressed_style)
             self.outer_up_button[level_index].setEnabled(False)
@@ -365,7 +366,7 @@ class Ui_MainWindow(object):
             
         
         elif clicked_content=="dbn": #电梯外部的下楼按钮
-            self.printMessage("OP:使用者在电梯外部"+str(level_index+1)+"楼点击了下楼按钮")
+            self.printMessage("使用者在电梯外部"+str(level_index+1)+"楼点击了下楼按钮")
             #设置按钮长按
             self.outer_down_button[level_index].setStyleSheet(self.outer_long_pressed_style)
             self.outer_down_button[level_index].setEnabled(False)

@@ -66,19 +66,19 @@ class Elevator(object):
     #任务队列排序
     def arrangeByTask(self):
         if self.state==GOING_UP:
-            self.by_task.sort()
+            self.by_task.sort(key=lambda x:x[0])
         elif self.state==GOING_DOWN:
-            self.by_task.sort()
+            self.by_task.sort(key=lambda x:x[0])
             self.by_task.reverse()
         else:
             pass    
     #第二任务队列排序
     def arrangeOppoTask(self):
         if self.state==GOING_UP:
-            self.oppo_task.sort()
+            self.oppo_task.sort(key=lambda x:x[0])
             self.oppo_task.reverse()
         elif self.state==GOING_DOWN:
-            self.oppo_task.sort()
+            self.oppo_task.sort(key=lambda x:x[0])
         else:
             pass
     #关闭开门动画
@@ -90,6 +90,14 @@ class Elevator(object):
     #获取任务队列首个任务的楼层
     def getFirstByTask(self):
         return self.by_task[0][0]
+    
+    def setDead(self):
+        self.state=DEAD
+        self.state_time=0
+        self.has_open_animation=False
+        self.has_close_animation=False
+
+
     #损坏电梯的修复
     def recover(self):
         self.state=STANDBY

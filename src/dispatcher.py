@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-12 16:48:44
+LastEditTime: 2021-05-12 19:52:11
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -21,6 +21,8 @@ class Dispatcher(object):
         self.elevator_list=[]
         for i in range(0,NUM_ELEVATOR):
             self.elevator_list.append(Elevator())
+        
+        self.available_count=NUM_ELEVATOR
 
         #计时器，间隔时间1000*UPDATE_GAP更新，此处设为1秒
         self.timer=QTimer()
@@ -74,9 +76,15 @@ class Dispatcher(object):
         """        
         by_task_len=len(self.elevator_list[elevator_sn].by_task)
         oppo_task_len=len(self.elevator_list[elevator_sn].oppo_task)
-        if self.elevator_list[elevator_sn].state==STANDBY and by_task_len==0 and oppo_task_len==0 :
+        #TEST:尝试加入报警电梯原有任务调度
+        #if self.elevator_list[elevator_sn].state==STANDBY and by_task_len==0 and oppo_task_len==0 :
+        if self.elevator_list[elevator_sn].state==STANDBY :
             #可以被报警的电梯：无任务执行，处于停止状态
             self.elevator_list[elevator_sn].state=DEAD
+            if self.elevator_list[elevator_sn].state_time!=0:
+                self.main_window.close_animation_start(elevator_sn) 
+            self.elevator_list[elevator_sn].setDead()
+            self.available_count-=1
             self.main_window.printMessage(str(elevator_sn+1)+"号电梯报告损坏，已停用")
 
             #电梯内所有的楼层按钮停用
@@ -84,12 +92,9 @@ class Dispatcher(object):
                 level_button.setStyleSheet(self.main_window.warn_long_pressed_style)
                 level_button.setEnabled(False)
 
-            #检查一遍所有电梯的状态
-            all_down=True
-            for elevator in self.elevator_list:
-                if elevator.state!=DEAD:
-                    all_down=False
-            if all_down==True:
+
+
+            if self.available_count==0:
                 self.main_window.printMessage("所有电梯全部停用")
                 #所有电梯全部停用时，停用全部电梯外部上下楼按钮
                 for up_button in self.main_window.outer_up_button:
@@ -98,6 +103,29 @@ class Dispatcher(object):
                 for down_button in self.main_window.outer_down_button:
                     down_button.setStyleSheet(self.main_window.outer_long_pressed_style)
                     down_button.setEnabled(False)
+                return
+            
+            else:
+                #警报电梯外调度分配
+                self.main_window.printMessage(str(elevator_sn+1)+"号电梯的已有外调度任务被其他可用电梯外调度")
+                for i in self.elevator_list[elevator_sn].by_task:
+                    if i[1]==UP:
+                        self.outerDispatch(UP,i[0])
+                    elif i[1]==DOWN:
+                        self.outerDispatch(DOWN,i[0])
+                    else:
+                        pass
+                for i in self.elevator_list[elevator_sn].oppo_task:
+                    if i[1]==UP:
+                        self.outerDispatch(UP,i[0])
+                    elif i[1]==DOWN:
+                        self.outerDispatch(DOWN,i[0])
+                    else:
+                        pass
+                self.elevator_list[elevator_sn].by_task.clear()
+                self.elevator_list[elevator_sn].oppo_task.clear()
+                
+
 
         elif self.elevator_list[elevator_sn].state==DEAD:
             #对已经处于报警状态的电梯，提示无需重复报警，恢复按钮状态
@@ -123,6 +151,7 @@ class Dispatcher(object):
             #恢复电梯运行状态
             self.elevator_list[elevator_sn].recover()
             self.main_window.printMessage(str(elevator_sn+1)+"号电梯成功修复，恢复运行")
+            self.available_count+=1
             #警告按钮恢复
             self.main_window.inner_warn_button[elevator_sn].setStyleSheet(self.main_window.warn_button_style)
             self.main_window.inner_warn_button[elevator_sn].setEnabled(True)
@@ -130,13 +159,14 @@ class Dispatcher(object):
             for level_button in self.main_window.inner_level_button[elevator_sn]:
                 level_button.setStyleSheet(self.main_window.level_button_style)
                 level_button.setEnabled(True)       
-            #有一个电梯能运行，就可以将外部上下楼按钮恢复
-            for up_button in self.main_window.outer_up_button:
-                up_button.setStyleSheet(self.main_window.outer_button_style)
-                up_button.setEnabled(True)
-            for down_button in self.main_window.outer_down_button:
-                down_button.setStyleSheet(self.main_window.outer_button_style)
-                down_button.setEnabled(True)
+            #只有一个电梯能运行时，可以将外部上下楼按钮恢复
+            if self.available_count==1:
+                for up_button in self.main_window.outer_up_button:
+                    up_button.setStyleSheet(self.main_window.outer_button_style)
+                    up_button.setEnabled(True)
+                for down_button in self.main_window.outer_down_button:
+                    down_button.setStyleSheet(self.main_window.outer_button_style)
+                    down_button.setEnabled(True)
 
 
 
@@ -166,7 +196,7 @@ class Dispatcher(object):
                 #添加到电梯任务队列中，并根据电梯运行状态进行任务s排序
                 self.elevator_list[elevator_sn].addByTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeByTask()
-                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
+                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...")
                 
             
         elif current_state==GOING_UP:
@@ -181,12 +211,12 @@ class Dispatcher(object):
                 #加入任务队列
                 self.elevator_list[elevator_sn].addByTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeByTask()
-                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
+                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...")
             else: #target_level<curr_level
                 #加入第二任务队列
                 self.elevator_list[elevator_sn].addOppoTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeOppoTask()
-                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
+                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...")
         
         elif current_state==GOING_DOWN:
             if target_level==curr_level:
@@ -200,12 +230,12 @@ class Dispatcher(object):
                 #加入任务队列
                 self.elevator_list[elevator_sn].addByTask((target_level,INNER))
                 self.elevator_list[elevator_sn].arrangeByTask()
-                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往")
+                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...")
             else: #target_level>curr_level
-                #加入反s任务队列
+                #加入反任务队列
                 self.elevator_list[elevator_sn].addOppoTask((target_level,INNER))
                 self.elevator_list[elevator_sn].arrangeOppoTask() 
-                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往") 
+                self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...") 
         else:
             pass
             
@@ -246,8 +276,9 @@ class Dispatcher(object):
             if order==DOWN:
                 self.main_window.outer_down_button[level-1].setStyleSheet(self.main_window.outer_button_style)
                 self.main_window.outer_down_button[level-1].setEnabled(True)
+            return
 
-        self.main_window.printMessage("电梯"+str(i+1)+"号离当前用户最近，正在前往")
+        self.main_window.printMessage("电梯"+str(i+1)+"号离当前用户最近，正在前往...")
         if distance[i]==0:
             #电梯已到达，开门并恢复按钮
             self.main_window.outer_up_button[level-1].setStyleSheet(self.main_window.outer_button_style)
@@ -327,6 +358,7 @@ class Dispatcher(object):
                         self.main_window.open_animation_start(i)
                         #电梯状态设为停止
                         elevator.setState(STANDBY)
+                        self.main_window.printMessage(str(i+1)+"号电梯已到达")
                         elevator.state_time=STANDBY_TIME
                         self.main_window.elevator_lcd[i].setProperty("value",elevator.level)
                         elevator.by_task.pop(0)
