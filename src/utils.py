@@ -13,12 +13,10 @@ DOOR_OPEN=0
 DOOR_CLOSE=1
 
 #电梯运行状态
-OPEN_STANDBY=0
-CLOSE_STANDBY=1
-GOING_UP=2
-GOING_DOWN=3
-STANDBY=4
-DEAD=5
+GOING_UP=1
+GOING_DOWN=2
+STANDBY=3
+DEAD=4
 
 #停顿时间
 STANDBY_TIME=4
@@ -30,7 +28,7 @@ INNER_Y=31
 #更新时间
 UPDATE_GAP=1
 
-#电梯外部按钮命令
+#电梯外部按钮
 UP=1
 DOWN=2
 INNER=3
@@ -38,8 +36,10 @@ INNER=3
 #定义无穷大:
 INF=50
 
-
+##################################################电梯类##################################################
 class Elevator(object):
+    """[电梯类]
+    """    
     def __init__(self):
         self.state=STANDBY
         self.level=1
@@ -50,22 +50,20 @@ class Elevator(object):
         
         self.by_task=[]
         self.oppo_task=[]
-    
-    def setDoor(self,doorstate:int):
-        self.door=doorstate
-    
+
+    #设置状态    
     def setState(self,elestate:int):
         self.state=elestate
-
+    #设置楼层
     def setLevel(self,target_level:int):
         self.level=target_level
-    
+    #将对应楼层加入任务队列
     def addByTask(self,target_level:int):
         self.by_task.append(target_level)
-    
+    #将对应楼层加入第二队列
     def addOppoTask(self,target_level:int):
         self.oppo_task.append(target_level)
-
+    #任务队列排序
     def arrangeByTask(self):
         if self.state==GOING_UP:
             self.by_task.sort()
@@ -74,6 +72,7 @@ class Elevator(object):
             self.by_task.reverse()
         else:
             pass    
+    #第二任务队列排序
     def arrangeOppoTask(self):
         if self.state==GOING_UP:
             self.oppo_task.sort()
@@ -82,15 +81,16 @@ class Elevator(object):
             self.oppo_task.sort()
         else:
             pass
+    #关闭开门动画
     def endOpenAniState(self):
         self.has_open_animation=False
-
+    #关闭关门动画
     def endCloseAniState(self):
         self.has_close_animation=False
-
+    #获取任务队列首个任务的楼层
     def getFirstByTask(self):
         return self.by_task[0][0]
-    
+    #损坏电梯的修复
     def recover(self):
         self.state=STANDBY
         self.state_time=0
@@ -120,6 +120,7 @@ class QSS_READER:
 
 ###########################################组件命名#####################################################
 
+#对Qt组件的命名，便于列表切片获取信息
 open_img_name="i_eoi_"
 close_img_name="i_eci_"
 mark_img_name="i_emi_"

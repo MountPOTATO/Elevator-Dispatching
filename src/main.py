@@ -1,12 +1,12 @@
 '''
-Author: your name
+Author: mount_potato
 Date: 2021-04-28 12:47:13
-LastEditTime: 2021-05-12 10:03:10
-LastEditors: your name
+LastEditTime: 2021-05-12 16:44:59
+LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\src\main.py
 '''
-import sys,threading
+import sys
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *
 from utils import *
