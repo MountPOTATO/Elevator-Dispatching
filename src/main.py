@@ -1,3 +1,11 @@
+'''
+Author: your name
+Date: 2021-04-28 12:47:13
+LastEditTime: 2021-05-12 10:03:10
+LastEditors: your name
+Description: In User Settings Edit
+FilePath: \Elevator-Dispatching\src\main.py
+'''
 import sys,threading
 from PyQt5.QtWidgets import *
 from PyQt5.QtGui import *

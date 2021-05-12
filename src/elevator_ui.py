@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-11 10:42:02
+LastEditTime: 2021-05-12 11:26:28
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -36,6 +36,8 @@ class Ui_MainWindow(object):
         #self.outer_level_one_button_up_y=[] #电梯外部一楼上按钮y轴位置，其他楼层按钮根据与它的相对位置推出
         self.outer_level_one_button_down_x=[] #电梯内部一楼下按钮x轴位置
         #self.outer_level_one_button_down_y=[] #电梯内部一楼下按钮y轴位置
+        self.repair_button_x=[] #电梯修理按钮x轴位置
+
         self.up_down_gif_x=[] #电梯上下标识动画位置
         self.mark_image_x=[] #电梯标号图片位置设置
 
@@ -47,6 +49,7 @@ class Ui_MainWindow(object):
         self.up_gif_label=[]   #up动画标签 
         self.down_gif_label=[] #down动画标签
         self.elevator_lcd=[] #电梯LCD楼层
+        self.repair_button=[] #电梯修理按钮
 
         self.inner_open_button=[]   #电梯内部开门按钮
         self.inner_close_button=[]  #电梯内部关门按钮
@@ -77,7 +80,7 @@ class Ui_MainWindow(object):
         self.level_long_pressed_style=QSS_READER.read("style/inner_level_long_pressed.qss")
         self.warn_long_pressed_style=QSS_READER.read("style/inner_warn_long_pressed.qss")
         self.outer_long_pressed_style=QSS_READER.read("style/outer_long_pressed.qss")
-
+        self.repair_style="QPushButton{image:url(:/resources/mark/repair.png);}"
 
         #组件位置信息初始化
         self.elevator_x.extend([30, 260, 490, 720, 950])    #初设电梯图片位置
@@ -87,7 +90,8 @@ class Ui_MainWindow(object):
         self.inner_open_button_x.extend([70,300,530,760,990])
         self.inner_level_one_button_x.extend([50,280,510,740,970])
         self.outer_level_one_button_up_x.extend([250,600])
-        self.outer_level_one_button_down_x.extend(([300,650]))
+        self.outer_level_one_button_down_x.extend([300,650])
+        self.repair_button_x.extend([755,835,915,995,1075]) #初设电梯修理按钮位置
         
 
         #输出框设置
@@ -147,11 +151,11 @@ class Ui_MainWindow(object):
 
             #放入电梯标号图片:命名规则i_ugl_电梯编号
             self.elevator_mark_image.append(QtWidgets.QLabel(self.central_widget))
-            self.elevator_mark_image[i].setGeometry(QtCore.QRect(self.mark_image_x[i], 300, 40,40))
+            self.elevator_mark_image[i].setGeometry(QtCore.QRect(self.repair_button_x[i]+3, 880, 48,48))
             root="resources/mark/"+mark_img_name+str(i+1)+".png"
             self.elevator_mark_image[i].setPixmap(QtGui.QPixmap(root))
             self.elevator_mark_image[i].setObjectName(mark_img_name+str(i))
-            self.elevator_mark_image[i].setVisible(False)            
+            self.elevator_mark_image[i].setVisible(True)            
 
             #放入LCD:命名规则
             self.elevator_lcd.append(QtWidgets.QLCDNumber(self.central_widget))
@@ -166,6 +170,14 @@ class Ui_MainWindow(object):
             self.elevator_lcd[i].setProperty("value", 1.0)
             self.elevator_lcd[i].setProperty("intValue", 1)
             self.elevator_lcd[i].setObjectName(elevator_lcd_name+str(i))
+
+            #放入修理按钮
+            self.repair_button.append(QtWidgets.QPushButton(self.central_widget))
+            self.repair_button[i].setStyleSheet(self.op_button_style)
+            self.repair_button[i].setGeometry(QtCore.QRect(self.repair_button_x[i], 830, 48, 48))
+            self.repair_button[i].setObjectName(repair_button_name+str(i))
+            #修理按钮设置槽函数onRepairButtonClicked
+            self.repair_button[i].clicked.connect(MainWindow.onRepairButtonClicked)
 
             #开门按钮加入组件
             self.inner_open_button.append(QtWidgets.QPushButton(self.central_widget))
@@ -186,7 +198,7 @@ class Ui_MainWindow(object):
             self.inner_warn_button[i].setStyleSheet(self.warn_button_style)
             self.inner_warn_button[i].setGeometry(QtCore.QRect(self.inner_open_button_x[i] + 80, 240, 31, 31))
             self.inner_warn_button[i].setObjectName(inner_warn_button_name+str(i))
-            #警告按钮设置槽函数InnerWarnButtonClicked
+            #警告按钮设置槽函数onInnerButtonClicked
             self.inner_warn_button[i].clicked.connect(MainWindow.onInnerButtonClicked)
 
             #添加每个电梯的内部楼层按钮
@@ -215,7 +227,7 @@ class Ui_MainWindow(object):
             self.outer_down_button[j].setGeometry(
                 QtCore.QRect(self.outer_level_one_button_down_x[int(j / 10)], 910 - 40 * (j % 10), 31, 31))
             self.outer_down_button[j].setObjectName(outer_down_button_name+str(j))
-            #外部操作按钮设置槽函数
+            #外部操作按钮设置槽函数onOuterButtonClicked
             self.outer_up_button[j].clicked.connect(MainWindow.onOuterButtonClicked)
             self.outer_down_button[j].clicked.connect(MainWindow.onOuterButtonClicked)
         
@@ -234,6 +246,7 @@ class Ui_MainWindow(object):
             self.inner_open_button[i].setText(_translate("MainWindow", "开"))
             self.inner_close_button[i].setText(_translate("MainWindow", "关"))
             self.inner_warn_button[i].setText(_translate("MainWindow", "✖"))
+            self.repair_button[i].setText(_translate("MainWindow","fix"))
 
             for j in range(0,NUM_LEVEL):
                 self.inner_level_button[i][j].setText(_translate("MainWindow",str(j+1)))
@@ -288,7 +301,6 @@ class Ui_MainWindow(object):
             self.printMessage("OP:使用者在电梯"+str(elevator_sn+1)+"内部点击了报警按钮")
             self.inner_warn_button[elevator_sn].setStyleSheet(self.warn_long_pressed_style)
             self.inner_warn_button[elevator_sn].setEnabled(False)
-
             self.dispatcher.responseWBN(elevator_sn)
             #TODO:添加按钮样式
 
@@ -311,17 +323,24 @@ class Ui_MainWindow(object):
             self.outer_down_button[level_index].setEnabled(False)
 
             self.dispatcher.outerDispatch(DOWN,level_index+1)
+    
+    def onRepairButtonClicked(self):
+        object_name=self.sender().objectName()
+        elevator_sn=int(object_name[6])
+        self.dispatcher.responseRBN(elevator_sn)
+
+
 
 
     def open_animation_start(self,elevator_sn):
         if self.dispatcher.elevator_list[elevator_sn].has_open_animation==False:
             self.dispatcher.elevator_list[elevator_sn].has_close_animation=False
+            self.close_gif_label[elevator_sn].setVisible(False)
             self.elevator_open_image[elevator_sn].setVisible(False)
             self.elevator_close_image[elevator_sn].setVisible(False)
             self.open_gif_label[elevator_sn].movie().jumpToFrame(0)
             self.open_gif_label[elevator_sn].movie().start()
             self.open_gif_label[elevator_sn].show()
-            self.close_gif_label[elevator_sn].setVisible(False)
             self.dispatcher.elevator_list[elevator_sn].has_open_animation=True
 
         thread_op=threading.Timer(0.7,self.open_animation_end,(elevator_sn,))
@@ -352,9 +371,10 @@ class Ui_MainWindow(object):
     def close_animation_end(self,elevator_sn):
         self.close_gif_label[elevator_sn].movie().setPaused(True)
         self.close_gif_label[elevator_sn].setVisible(False)
-        self.elevator_close_image[elevator_sn].setVisible(True)
-        self.elevator_open_image[elevator_sn].setVisible(False) 
-        self.dispatcher.elevator_list[elevator_sn].state_time=0  
+        if self.dispatcher.elevator_list[elevator_sn].has_open_animation==False:
+            self.elevator_close_image[elevator_sn].setVisible(True)
+            self.elevator_open_image[elevator_sn].setVisible(False) 
+            self.dispatcher.elevator_list[elevator_sn].state_time=0  
         
 
     def up_down_animation_show(self,order,elevator_sn):

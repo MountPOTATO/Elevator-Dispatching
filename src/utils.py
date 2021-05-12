@@ -33,20 +33,20 @@ UPDATE_GAP=1
 #电梯外部按钮命令
 UP=1
 DOWN=2
+INNER=3
 
 #定义无穷大:
 INF=50
 
 
-
 class Elevator(object):
     def __init__(self):
-        self.door=DOOR_CLOSE
         self.state=STANDBY
         self.level=1
         self.state_time=0
         self.has_open_animation=False
         self.has_close_animation=False
+        self.curr_button=INNER
         
         self.by_task=[]
         self.oppo_task=[]
@@ -90,7 +90,15 @@ class Elevator(object):
 
     def getFirstByTask(self)->int:
         return self.by_task[0]
-
+    
+    def recover(self):
+        self.state=STANDBY
+        self.state_time=0
+        self.has_open_animation=False
+        self.has_close_animation=False
+        self.by_task.clear()
+        self.oppo_task.clear()
+        self.curr_button=INNER
 
 
 ##############################################工具######################################################
@@ -126,4 +134,5 @@ inner_warn_button_name="i_wbn_"
 inner_level_button_name="i_lbn_"
 outer_up_button_name="o_ubn_"
 outer_down_button_name="o_dbn_"
+repair_button_name="o_rbn_"
 
