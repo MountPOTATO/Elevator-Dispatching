@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-13 10:27:38
+LastEditTime: 2021-05-17 22:29:27
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -19,6 +19,12 @@ from dispatcher import *
 class Ui_MainWindow(object):
 
     def __init__(self):
+        super(Ui_MainWindow,self).__init__()
+        self.widgetInit()
+
+    def widgetInit(self):
+        """[主窗口组件集设定]
+        """        
         self.dispatcher=Dispatcher(self)
         
         #模块位置集合
@@ -74,6 +80,11 @@ class Ui_MainWindow(object):
         
     
     def setupUi(self,MainWindow):
+        """[主窗口的组件样式设定]
+
+        Args:
+            MainWindow: [主窗口]
+        """        
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1240,970)
         MainWindow.setStyleSheet("background-color:rgb(230,230,230);")
@@ -396,7 +407,7 @@ class Ui_MainWindow(object):
 
 
     #开门动画
-    def open_animation_start(self,elevator_sn):
+    def openAnimationStart(self,elevator_sn):
         """[对指定电梯执行开门动作时播放开门动画]
 
         Args:
@@ -413,10 +424,10 @@ class Ui_MainWindow(object):
             self.open_gif_label[elevator_sn].show()
             self.dispatcher.elevator_list[elevator_sn].has_open_animation=True
 
-        thread_op=threading.Timer(0.7,self.open_animation_end,(elevator_sn,))
+        thread_op=threading.Timer(0.7,self.openAnimationEnd,(elevator_sn,))
         thread_op.start()
 
-    def open_animation_end(self,elevator_sn):
+    def openAnimationEnd(self,elevator_sn):
         """[依赖开门动画函数，0.7秒后结束动画]
 
         Args:
@@ -430,7 +441,7 @@ class Ui_MainWindow(object):
         self.dispatcher.elevator_list[elevator_sn].state_time=STANDBY_TIME
 
 
-    def close_animation_start(self,elevator_sn):
+    def closeAnimationStart(self,elevator_sn):
         """[对指定电梯执行关门动作时播放开门动画]
 
         Args:
@@ -447,10 +458,10 @@ class Ui_MainWindow(object):
             self.open_gif_label[elevator_sn].setVisible(False)
             self.dispatcher.elevator_list[elevator_sn].has_close_animation=True
 
-        thread_op=threading.Timer(0.7,self.close_animation_end,(elevator_sn,))
+        thread_op=threading.Timer(0.7,self.closeAnimationEnd,(elevator_sn,))
         thread_op.start()
 
-    def close_animation_end(self,elevator_sn):
+    def closeAnimationEnd(self,elevator_sn):
         """[依赖关门动画函数，0.7秒后结束动画]
 
         Args:
@@ -465,7 +476,7 @@ class Ui_MainWindow(object):
             self.dispatcher.elevator_list[elevator_sn].state_time=0  
         
 
-    def up_down_animation_show(self,order,elevator_sn):
+    def upDownAnimationShow(self,order,elevator_sn):
         """[对指定电梯上下指示图标动画的播放，停止时不播放]]
 
         Args:

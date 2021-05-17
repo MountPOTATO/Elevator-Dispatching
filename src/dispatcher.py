@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-17 16:35:01
+LastEditTime: 2021-05-17 22:27:57
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -39,7 +39,7 @@ class Dispatcher(object):
         
         if self.elevator_list[elevator_sn].state==STANDBY:
             #对停止的电梯，播放开门动画并设定开门等待时间
-            self.main_window.open_animation_start(elevator_sn)
+            self.main_window.openAnimationStart(elevator_sn)
             self.elevator_list[elevator_sn].state_time=STANDBY_TIME
         elif self.elevator_list[elevator_sn].state==DEAD:
             #对故障电梯，提示无法开门
@@ -58,7 +58,7 @@ class Dispatcher(object):
         if self.elevator_list[elevator_sn].state==STANDBY and self.elevator_list[elevator_sn].state_time>=1:
             #对还处于开门等待状态的电梯提前关门，关门时间1秒
             self.elevator_list[elevator_sn].state_time=1
-            self.main_window.close_animation_start(elevator_sn)
+            self.main_window.closeAnimationStart(elevator_sn)
         elif self.elevator_list[elevator_sn].state==DEAD:
             #对故障电梯提示无法开门
             self.main_window.printMessage(str(elevator_sn+1)+"号电梯已故障，关门命令无效") 
@@ -82,7 +82,7 @@ class Dispatcher(object):
             #可以被报警的电梯：无任务执行，处于停止状态
             self.elevator_list[elevator_sn].state=DEAD
             if self.elevator_list[elevator_sn].state_time!=0:
-                self.main_window.close_animation_start(elevator_sn) 
+                self.main_window.closeAnimationStart(elevator_sn) 
             self.elevator_list[elevator_sn].setDead()
             self.available_count-=1
             self.main_window.printMessage(str(elevator_sn+1)+"号电梯报告损坏，已停用")
@@ -190,7 +190,7 @@ class Dispatcher(object):
                 self.main_window.inner_level_button[elevator_sn][target_level-1].setStyleSheet(self.main_window.level_button_style)
                 self.main_window.inner_level_button[elevator_sn][target_level-1].setEnabled(True)
                 #开门动画播放与状态更新
-                self.main_window.open_animation_start(elevator_sn)
+                self.main_window.openAnimationStart(elevator_sn)
                 self.elevator_list[elevator_sn].state_time=STANDBY_TIME
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             else:
@@ -206,7 +206,7 @@ class Dispatcher(object):
                 self.main_window.inner_level_button[elevator_sn][target_level-1].setStyleSheet(self.main_window.level_button_style)
                 self.main_window.inner_level_button[elevator_sn][target_level-1].setEnabled(True)
 
-                self.main_window.open_animation_start(elevator_sn)
+                self.main_window.openAnimationStart(elevator_sn)
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             elif target_level>curr_level:
                 #加入任务队列
@@ -225,7 +225,7 @@ class Dispatcher(object):
                 self.main_window.inner_level_button[elevator_sn][target_level-1].setStyleSheet(self.main_window.level_button_style)
                 self.main_window.inner_level_button[elevator_sn][target_level-1].setEnabled(True)
 
-                self.main_window.open_animation_start(elevator_sn)   
+                self.main_window.openAnimationStart(elevator_sn)   
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")  
             elif target_level<curr_level:
                 #加入任务队列
@@ -287,7 +287,7 @@ class Dispatcher(object):
             self.main_window.outer_up_button[level-1].setEnabled(True)
             self.main_window.outer_down_button[level-1].setEnabled(True)
             #播放动画设置开门状态
-            self.main_window.open_animation_start(i)
+            self.main_window.openAnimationStart(i)
             self.elevator_list[i].state_time=STANDBY_TIME
             
         else:
@@ -310,13 +310,13 @@ class Dispatcher(object):
         """        
         for i,elevator in enumerate(self.elevator_list):
             #电梯上下楼标识动画播放
-            self.main_window.up_down_animation_show(elevator.state,i)
+            self.main_window.upDownAnimationShow(elevator.state,i)
 
             #电梯静止时的状态更新
             if elevator.state==STANDBY and elevator.state_time!=0:
                 #开门等待状态只剩1s时开始关门
                 if elevator.state_time==1:
-                    self.main_window.close_animation_start(i)
+                    self.main_window.closeAnimationStart(i)
                 #静止状态下，对状态时间计时
                 elevator.state_time-=1
                 continue    
@@ -363,7 +363,7 @@ class Dispatcher(object):
                             self.main_window.outer_down_button[elevator.level-1].setEnabled(True)                                                 
                         self.main_window.inner_level_button[i][target_level-1].setStyleSheet(self.main_window.level_button_style)
                         self.main_window.inner_level_button[i][target_level-1].setEnabled(True)                           
-                        self.main_window.open_animation_start(i)
+                        self.main_window.openAnimationStart(i)
                         #电梯状态设为停止
                         elevator.setState(STANDBY)
                         self.main_window.printMessage(str(i+1)+"号电梯已到达")
