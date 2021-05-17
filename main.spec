@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['src\\main.py'],
-             pathex=['src\\dispatcher.py', 'src\\utils.py', 'src\\elevator_ui.py', 'E:\\myGit\\Elevator-Dispatching'],
+             pathex=['src\\utils.py', 'src\\dispatcher.py', 'src\\elevator_ui.py', 'E:\\myGit\\Elevator-Dispatching'],
              binaries=[],
              datas=[],
              hiddenimports=[],

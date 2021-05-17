@@ -1,5 +1,4 @@
-卷 新加卷 的文件夹 PATH 列表
-卷序列号为 B276-5939
+
 E:.
 │  main.exe
 │  README.md

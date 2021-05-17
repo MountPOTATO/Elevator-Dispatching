@@ -1,0 +1,9 @@
+QLabel
+{
+	font-family:"Microsoft YaHei";
+	font-weight:bold;
+	color:black;
+	text-align:center;
+	border:none;
+	font-size:16px;
+}

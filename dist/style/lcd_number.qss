@@ -1,8 +1,0 @@
-QLCDNumber{  
-    color:red;
-    font-weight:bold;
-    border-style: solid;  
-    border: 2px solid black;  
-    border-radius: 8px;  
-    width:50px;  
-}  
