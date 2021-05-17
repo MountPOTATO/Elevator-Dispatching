@@ -1,0 +1,49 @@
+卷 新加卷 的文件夹 PATH 列表
+卷序列号为 B276-5939
+E:.
+│  main.exe
+│  README.md
+│  tree.txt
+│  
+├─.vscode
+│  └─.ropeproject
+│          config.py
+│          objectdb
+│          
+├─resources
+│  │  release.ico
+│  │  window_icon.png
+│  │  
+│  ├─elevator
+│  │      close_ani.gif
+│  │      down.gif
+│  │      elevator_closed.png
+│  │      elevator_open.png
+│  │      open_ani.gif
+│  │      up.gif
+│  │      
+│  └─mark
+│          i_emi_1.png
+│          i_emi_2.png
+│          i_emi_3.png
+│          i_emi_4.png
+│          i_emi_5.png
+│          repair.png
+│          
+├─src
+│      dispatcher.py
+│      elevator_ui.py
+│      main.py
+│      utils.py
+│      
+└─style
+        inner_level_button.qss
+        inner_level_long_pressed.qss
+        inner_op_button.qss
+        inner_warn_button.qss
+        inner_warn_long_pressed.qss
+        label_text.qss
+        lcd_number.qss
+        outer_button.qss
+        outer_long_pressed.qss
+        

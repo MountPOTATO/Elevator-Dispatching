@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-26 16:10:03
-LastEditTime: 2021-05-12 19:46:54
+LastEditTime: 2021-05-13 10:27:38
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \os_elevator\elevator_ui.py
@@ -266,10 +266,22 @@ class Ui_MainWindow(object):
             self.level_label[j].setObjectName("level_label"+str(j))
             self.level_label[j].setStyleSheet(self.text_style)
 
+        #禁用电梯外部1楼下楼与20楼上楼按钮
+        self.outer_up_button[NUM_LEVEL-1].setEnabled(False)
+        self.outer_up_button[NUM_LEVEL-1].setVisible(False)
+        self.outer_down_button[0].setEnabled(False)
+        self.outer_down_button[0].setVisible(False)
+        #重设电梯外部1楼上楼与20楼下楼按钮位置
+        x1=self.outer_level_one_button_up_x[0]
+        x2=self.outer_level_one_button_down_x[0]
+        x3=self.outer_level_one_button_up_x[1]
+        x4=self.outer_level_one_button_down_x[1]
+        self.outer_up_button[0].setGeometry(
+                    QtCore.QRect((x1+x2)/2, self.outer_level_one_button_up_y, 31, 31))
+        self.outer_down_button[NUM_LEVEL-1].setGeometry(
+                    QtCore.QRect((x3+x4)/2, self.outer_level_one_button_up_y-40*9, 31, 31))
 
         self.printMessage("欢迎使用电梯调度系统")
-
-
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

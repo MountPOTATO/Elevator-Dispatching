@@ -1,7 +1,7 @@
 '''
 Author: mount_potato
 Date: 2021-04-29 00:31:57
-LastEditTime: 2021-05-12 19:52:11
+LastEditTime: 2021-05-17 16:35:01
 LastEditors: Please set LastEditors
 Description: In User Settings Edit
 FilePath: \Elevator-Dispatching\dispatcher.py
@@ -78,7 +78,7 @@ class Dispatcher(object):
         oppo_task_len=len(self.elevator_list[elevator_sn].oppo_task)
         #TEST:尝试加入报警电梯原有任务调度
         #if self.elevator_list[elevator_sn].state==STANDBY and by_task_len==0 and oppo_task_len==0 :
-        if self.elevator_list[elevator_sn].state==STANDBY :
+        if self.elevator_list[elevator_sn].state!=DEAD :
             #可以被报警的电梯：无任务执行，处于停止状态
             self.elevator_list[elevator_sn].state=DEAD
             if self.elevator_list[elevator_sn].state_time!=0:
@@ -106,8 +106,9 @@ class Dispatcher(object):
                 return
             
             else:
-                #警报电梯外调度分配
-                self.main_window.printMessage(str(elevator_sn+1)+"号电梯的已有外调度任务被其他可用电梯外调度")
+                #警报电梯已有的外调度任务供其他电梯外调度分配
+                if by_task_len !=0 or oppo_task_len !=0:
+                    self.main_window.printMessage(str(elevator_sn+1)+"号电梯的已有外调度任务被其他可用电梯外调度")
                 for i in self.elevator_list[elevator_sn].by_task:
                     if i[1]==UP:
                         self.outerDispatch(UP,i[0])
@@ -193,7 +194,7 @@ class Dispatcher(object):
                 self.elevator_list[elevator_sn].state_time=STANDBY_TIME
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯已经到达")
             else:
-                #添加到电梯任务队列中，并根据电梯运行状态进行任务s排序
+                #添加到电梯任务队列中，并根据电梯运行状态进行任务排序
                 self.elevator_list[elevator_sn].addByTask([target_level,INNER])
                 self.elevator_list[elevator_sn].arrangeByTask()
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...")
@@ -232,7 +233,7 @@ class Dispatcher(object):
                 self.elevator_list[elevator_sn].arrangeByTask()
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...")
             else: #target_level>curr_level
-                #加入反任务队列
+                #加入第二任务队列
                 self.elevator_list[elevator_sn].addOppoTask((target_level,INNER))
                 self.elevator_list[elevator_sn].arrangeOppoTask() 
                 self.main_window.printMessage(str(elevator_sn+1)+"号电梯正在前往...") 
@@ -291,7 +292,14 @@ class Dispatcher(object):
             
         else:
             #未到达，最优电梯加入任务队列，任务队列内容包括(楼层，对应的外调度按钮(为了后续按钮状态恢复))
-            self.elevator_list[i].addByTask([level,order])
+            state=self.elevator_list[i].state
+            lev=self.elevator_list[i].level
+            if (order==UP and (state==DOWN or lev>level)) or (order==DOWN and (state==UP or lev<level)):
+                self.elevator_list[i].addOppoTask([level,order])
+                self.elevator_list[i].arrangeOppoTask()
+            else:
+                self.elevator_list[i].addByTask([level,order])
+                self.elevator_list[i].arrangeByTask()
             self.elevator_list[i].curr_button=UP if order==UP else DOWN
             
             
